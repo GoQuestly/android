@@ -25,5 +25,8 @@
     <string name="error_passwords_not_match">Паролі не співпадають</string>
     <string name="error_email_already_exists">Акаунт з цією електронною адресою вже існує</string>
     <string name="error_something_went_wrong">Щось пішло не так. Будь ласка, спробуйте ще раз.</string>
+    <string name="error_invalid_credentials">Неправильна адреса електронної пошти або пароль. Будь ласка, спробуйте ще раз.</string>
+    <string name="forgot_password">Забули пароль?</string>
+    <string name="welcome_to">Вітаємо у</string>
 
 </resources>

@@ -23,4 +23,7 @@
     <string name="error_passwords_not_match">Passwords do not match</string>
     <string name="error_email_already_exists">An account with this email already exists</string>
     <string name="error_something_went_wrong">Something went wrong. Please try again.</string>
+    <string name="error_invalid_credentials">Invalid email or password. Please try again.</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="welcome_to">Welcome to</string>
 </resources>

@@ -72,7 +72,21 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                                 composable(NavScreen.Login.route) {
-                                    LoginScreen()
+                                    LoginScreen(
+                                        onRegisterClick = {
+                                            navController.navigate(NavScreen.Register.route)
+                                        },
+                                        onLoginSuccess = { isEmailVerificationNeeded ->
+                                            val route =
+                                                if (isEmailVerificationNeeded) NavScreen.VerifyEmail else NavScreen.Home
+
+                                            navController.navigate(route.route) {
+                                                popUpTo(NavScreen.Welcome.route) {
+                                                    inclusive = true
+                                                }
+                                            }
+                                        },
+                                    )
                                 }
                                 composable(NavScreen.VerifyEmail.route) {
                                     VerifyEmailScreen()

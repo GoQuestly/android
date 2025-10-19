@@ -73,7 +73,7 @@ fun AppTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         minLines = minLines,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
             unfocusedBorderColor = MaterialTheme.colorScheme.outline,
