@@ -1,6 +1,5 @@
 package com.goquesty.presentation.welcome
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -23,7 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -32,23 +34,37 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.goquesty.R
 import com.goquesty.presentation.core.components.button.PrimaryButton
 import com.goquesty.presentation.core.components.button.SecondaryButton
+import com.goquesty.presentation.core.preview.ThemePreview
 import com.goquesty.presentation.core.theme.GoquestlyTheme
 
 @Composable
-fun WelcomeScreen(viewModel: WelcomeViewModel = hiltViewModel()) {
-    WelcomeScreenContent()
+fun WelcomeScreen(
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+) {
+    var hasAnimated by rememberSaveable { mutableStateOf(false) }
+
+    WelcomeScreenContent(
+        showAnimation = !hasAnimated,
+        onLoginClick = onLoginClick,
+        onRegisterClick = onRegisterClick
+    )
+
+    LaunchedEffect(Unit) {
+        hasAnimated = true
+    }
 }
 
 @Composable
-fun WelcomeScreenContent(
-    showAnimation: Boolean = true
+private fun WelcomeScreenContent(
+    showAnimation: Boolean = true,
+    onLoginClick: () -> Unit = {},
+    onRegisterClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedBackground()
@@ -146,14 +162,14 @@ fun WelcomeScreenContent(
             ) {
                 PrimaryButton(
                     modifier = Modifier.height(50.dp),
-                    text = stringResource(R.string.sign_in),
-                    onClick = {}
+                    text = stringResource(R.string.login),
+                    onClick = onLoginClick
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 SecondaryButton(
                     modifier = Modifier.height(50.dp),
-                    text = stringResource(R.string.sign_up),
-                    onClick = {}
+                    text = stringResource(R.string.register),
+                    onClick = onRegisterClick
                 )
             }
         }
@@ -198,18 +214,9 @@ private fun AnimatedBackground() {
 }
 
 
-@Preview(
-    name = "Light Mode",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showSystemUi = true
-)
-@Preview(
-    name = "Dark Mode",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showSystemUi = true
-)
+@ThemePreview
 @Composable
-fun WelcomeScreenPreview() {
+private fun WelcomeScreenPreview() {
     GoquestlyTheme {
         WelcomeScreenContent(showAnimation = false)
     }

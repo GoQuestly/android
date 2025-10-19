@@ -1,5 +1,7 @@
 package com.goquesty.di
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.goquesty.data.remote.ApiService
 import com.goquesty.util.API_BASE_URL
 import com.goquesty.util.HTTP_REQUEST_TIMEOUT_SECONDS
@@ -7,14 +9,14 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import javax.inject.Singleton
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -29,16 +31,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpLoggingInterceptor() = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-
-    @Provides
-    @Singleton
     fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
+        @ApplicationContext context: Context
     ) = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
+        .addInterceptor(ChuckerInterceptor.Builder(context).build())
         .connectTimeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .readTimeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .writeTimeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)

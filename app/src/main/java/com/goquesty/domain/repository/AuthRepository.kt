@@ -1,5 +1,11 @@
 package com.goquesty.domain.repository
 
-interface AuthRepository {
+import com.goquesty.domain.model.User
 
+interface AuthRepository {
+    suspend fun register(
+        name: String,
+        email: String,
+        password: String
+    ): Result<User>
 }

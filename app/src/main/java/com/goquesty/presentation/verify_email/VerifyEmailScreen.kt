@@ -1,0 +1,22 @@
+package com.goquesty.presentation.verify_email
+
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.goquesty.presentation.core.preview.ThemePreview
+
+@Composable
+fun VerifyEmailScreen(viewModel: VerifyEmailViewModel = hiltViewModel()) {
+    VerifyEmailScreenContent()
+}
+
+@Composable
+private fun VerifyEmailScreenContent() {
+    Text("Verify Email Screen")
+}
+
+@ThemePreview
+@Composable
+private fun VerifyEmailScreenPreview() {
+    VerifyEmailScreenContent()
+}

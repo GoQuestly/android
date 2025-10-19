@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -18,6 +17,9 @@ import com.goquesty.presentation.core.navigation.NavGraph
 import com.goquesty.presentation.core.navigation.NavScreen
 import com.goquesty.presentation.core.theme.GoquestlyTheme
 import com.goquesty.presentation.home.HomeScreen
+import com.goquesty.presentation.login.LoginScreen
+import com.goquesty.presentation.registration.RegisterScreen
+import com.goquesty.presentation.verify_email.VerifyEmailScreen
 import com.goquesty.presentation.welcome.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,11 +43,39 @@ class MainActivity : ComponentActivity() {
                             startDestination = NavGraph.AUTH_GRAPH.route
                         ) {
                             navigation(
-                                startDestination = NavScreen.Login.route,
+                                startDestination = NavScreen.Welcome.route,
                                 route = NavGraph.AUTH_GRAPH.route
                             ) {
+                                composable(NavScreen.Welcome.route) {
+                                    WelcomeScreen(
+                                        onLoginClick = {
+                                            navController.navigate(NavScreen.Login.route)
+                                        },
+                                        onRegisterClick = {
+                                            navController.navigate(NavScreen.Register.route)
+                                        }
+                                    )
+                                }
+
+                                composable(NavScreen.Register.route) {
+                                    RegisterScreen(
+                                        onLoginClick = {
+                                            navController.navigate(NavScreen.Login.route)
+                                        },
+                                        onRegisterSuccess = {
+                                            navController.navigate(NavScreen.VerifyEmail.route) {
+                                                popUpTo(NavScreen.Welcome.route) {
+                                                    inclusive = true
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
                                 composable(NavScreen.Login.route) {
-                                    WelcomeScreen()
+                                    LoginScreen()
+                                }
+                                composable(NavScreen.VerifyEmail.route) {
+                                    VerifyEmailScreen()
                                 }
                             }
 

@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="your_journey_begins_here">Ваша подорож починається тут</string>
-    <string name="sign_in">Увійти</string>
-    <string name="sign_up">Реєстрація</string>
+    <string name="login">Увійти</string>
+    <string name="register">Реєстрація</string>
+    <string name="participate_in_interactive_quests">Беріть участь в інтерактивних квестах</string>
+    <string name="email">Адреса електронної пошти</string>
+    <string name="name">Ім\'я</string>
+    <string name="password">Пароль</string>
+    <string name="confirm_password">Підтвердіть пароль</string>
+    <string name="already_have_an_account">Вже є акаунт?</string>
+    <string name="or">АБО</string>
+    <string name="continue_with_google">Продовжити через Google</string>
+    <string name="sign_in_with_google">Увійти через Google</string>
+
+    <string name="hide_password">Приховати пароль</string>
+    <string name="show_password">Показати пароль</string>
+
+    <string name="error_email_required">Електронна адреса обов\'язкова</string>
+    <string name="error_email_invalid">Невірний формат електронної адреси</string>
+    <string name="error_name_required">Ім\'я обов\'язкове</string>
+    <string name="error_password_required">Пароль обов\'язковий</string>
+    <string name="error_password_too_short">Пароль має містити щонайменше %d символів</string>
+    <string name="error_confirm_password_required">Будь ласка, підтвердіть пароль</string>
+    <string name="error_passwords_not_match">Паролі не співпадають</string>
+    <string name="error_email_already_exists">Акаунт з цією електронною адресою вже існує</string>
+    <string name="error_something_went_wrong">Щось пішло не так. Будь ласка, спробуйте ще раз.</string>
+
 </resources>
