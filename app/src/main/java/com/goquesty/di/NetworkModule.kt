@@ -3,6 +3,7 @@ package com.goquesty.di
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.goquesty.data.remote.ApiService
+import com.goquesty.data.remote.interceptor.AuthInterceptor
 import com.goquesty.util.API_BASE_URL
 import com.goquesty.util.HTTP_REQUEST_TIMEOUT_SECONDS
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -32,8 +33,10 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        authInterceptor: AuthInterceptor,
     ) = OkHttpClient.Builder()
+        .addInterceptor(authInterceptor)
         .addInterceptor(ChuckerInterceptor.Builder(context).build())
         .connectTimeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .readTimeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)

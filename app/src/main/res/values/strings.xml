@@ -30,4 +30,7 @@
     <string name="send_reset_link">Send reset link</string>
     <string name="back_to_login">Back to login</string>
     <string name="reset_link_sent_successfully">Reset link sent successfully</string>
+    <string name="error_oops">Oops!</string>
+    <string name="error_check_connection_and_retry">Check your internet connection and try again.</string>
+    <string name="try_again">Try again</string>
 </resources>

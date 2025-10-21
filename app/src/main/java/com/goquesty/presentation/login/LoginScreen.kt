@@ -68,7 +68,7 @@ import com.goquesty.presentation.core.theme.GoquestlyTheme
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onRegisterClick: () -> Unit,
-    onLoginSuccess: (isEmailVerificationNeeded: Boolean) -> Unit,
+    onLoginSuccess: () -> Unit,
     onForgotPasswordClick: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
@@ -76,7 +76,7 @@ fun LoginScreen(
 
     LaunchedEffect(state.isLoginSuccessful) {
         if (state.isLoginSuccessful) {
-            currentOnLoginSuccess(state.needsEmailVerification)
+            currentOnLoginSuccess()
         }
     }
 

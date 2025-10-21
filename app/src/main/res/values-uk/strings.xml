@@ -32,4 +32,7 @@
     <string name="send_reset_link">Надіслати посилання</string>
     <string name="back_to_login">Повернутися до входу</string>
     <string name="reset_link_sent_successfully">Посилання для скидання паролю успішно надіслано</string>
+    <string name="error_oops">Йой!</string>
+    <string name="error_check_connection_and_retry">Перевірте підключення до інтернету та спробуйте ще раз.</string>
+    <string name="try_again">Спробувати ще раз</string>
 </resources>

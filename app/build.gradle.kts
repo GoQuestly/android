@@ -112,6 +112,7 @@ dependencies {
     implementation(libs.play.services.auth)
     debugImplementation(libs.chucker.debug)
     releaseImplementation(libs.chucker.release)
+    implementation(libs.androidx.splashscreen)
 }
 
 configurations.all {

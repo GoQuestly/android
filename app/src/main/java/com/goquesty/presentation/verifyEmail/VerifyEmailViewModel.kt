@@ -1,4 +1,4 @@
-package com.goquesty.presentation.verify_email
+package com.goquesty.presentation.verifyEmail
 
 import androidx.lifecycle.ViewModel
 import com.goquesty.domain.repository.AuthRepository

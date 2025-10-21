@@ -42,4 +42,12 @@ class AuthRepositoryImpl @Inject constructor(
         val request = ResetPasswordRequestDto(email)
         apiService.requestPasswordReset(request)
     }
+
+    override suspend fun isLoggedIn(): Boolean {
+        return tokenManager.hasToken()
+    }
+
+    override suspend fun logout() {
+        tokenManager.clearToken()
+    }
 }

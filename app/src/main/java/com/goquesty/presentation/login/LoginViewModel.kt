@@ -55,7 +55,6 @@ class LoginViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         isLoginSuccessful = true,
-                        needsEmailVerification = !user.isEmailVerified
                     )
                 }
             }.onFailure { error ->

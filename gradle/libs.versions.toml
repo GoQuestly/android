@@ -18,6 +18,7 @@ kotlinxSerialization = "1.9.0"
 retrofitKotlinxSerialization = "1.0.0"
 playServicesAuth = "21.4.0"
 chucker = "4.0.0"
+splashScreen = "1.0.1"
 
 
 junit = "4.13.2"
@@ -52,7 +53,7 @@ chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref
 chucker-release = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "androidxDatastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidxDatastore" }
-
+androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -106,8 +106,8 @@ private fun ResetPasswordScreenContent(
                 Snackbar(
                     snackbarData = snackbarData,
                     shape = RoundedCornerShape(12.dp),
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,  // ⬅️ Правильний колір
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,  // ⬅️ Правильний колір
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     actionColor = MaterialTheme.colorScheme.primary
                 )
             }

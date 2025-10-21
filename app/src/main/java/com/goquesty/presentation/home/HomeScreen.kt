@@ -7,7 +7,10 @@ import com.goquesty.presentation.core.preview.ThemePreview
 import com.goquesty.presentation.core.theme.GoquestlyTheme
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onLogout: () -> Unit = {},
+) {
     HomeScreenContent()
 }
 
