@@ -21,6 +21,7 @@ private val DarkColorScheme = darkColorScheme(
     error = RedFC,
     onTertiary = Green11,
     surfaceVariant = Black10,
+    secondaryContainer = Black18
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -36,6 +37,7 @@ private val LightColorScheme = lightColorScheme(
     error = RedB9,
     onTertiary = Black11,
     surfaceVariant = White,
+    secondaryContainer = White
 )
 
 @Composable

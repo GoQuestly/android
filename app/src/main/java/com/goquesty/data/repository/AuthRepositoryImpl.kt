@@ -4,6 +4,7 @@ import com.goquesty.data.local.TokenManager
 import com.goquesty.data.remote.ApiService
 import com.goquesty.data.remote.dto.LoginRequestDto
 import com.goquesty.data.remote.dto.RegisterRequestDto
+import com.goquesty.data.remote.dto.ResetPasswordRequestDto
 import com.goquesty.domain.mapper.toDomainModel
 import com.goquesty.domain.repository.AuthRepository
 import com.goquesty.util.runCatchingAppException
@@ -21,11 +22,7 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String
     ) = runCatchingAppException {
-        val request = RegisterRequestDto(
-            email = email,
-            name = name,
-            password = password
-        )
+        val request = RegisterRequestDto(email, name, password)
         val response = apiService.register(request)
         tokenManager.saveToken(response.accessToken)
         response.user.toDomainModel()
@@ -35,12 +32,14 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String
     ) = runCatchingAppException {
-        val request = LoginRequestDto(
-            email = email,
-            password = password
-        )
+        val request = LoginRequestDto(email, password)
         val response = apiService.login(request)
         tokenManager.saveToken(response.accessToken)
         response.user.toDomainModel()
+    }
+
+    override suspend fun requestPasswordReset(email: String) = runCatchingAppException {
+        val request = ResetPasswordRequestDto(email)
+        apiService.requestPasswordReset(request)
     }
 }

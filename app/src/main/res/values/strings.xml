@@ -26,4 +26,8 @@
     <string name="error_invalid_credentials">Invalid email or password. Please try again.</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="welcome_to">Welcome to</string>
+    <string name="reset_password">Reset password</string>
+    <string name="send_reset_link">Send reset link</string>
+    <string name="back_to_login">Back to login</string>
+    <string name="reset_link_sent_successfully">Reset link sent successfully</string>
 </resources>

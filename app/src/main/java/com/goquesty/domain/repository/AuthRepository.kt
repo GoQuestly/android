@@ -13,4 +13,6 @@ interface AuthRepository {
         email: String,
         password: String
     ): Result<User>
+
+    suspend fun requestPasswordReset(email: String): Result<Unit>
 }

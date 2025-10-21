@@ -19,6 +19,7 @@ import com.goquesty.presentation.core.theme.GoquestlyTheme
 import com.goquesty.presentation.home.HomeScreen
 import com.goquesty.presentation.login.LoginScreen
 import com.goquesty.presentation.registration.RegisterScreen
+import com.goquesty.presentation.resetPassword.ResetPasswordScreen
 import com.goquesty.presentation.verify_email.VerifyEmailScreen
 import com.goquesty.presentation.welcome.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,6 +87,20 @@ class MainActivity : ComponentActivity() {
                                                 }
                                             }
                                         },
+                                        onForgotPasswordClick = {
+                                            navController.navigate(NavScreen.ResetPassword.route)
+                                        }
+                                    )
+                                }
+                                composable(NavScreen.ResetPassword.route) {
+                                    ResetPasswordScreen(
+                                        openLogin = {
+                                            navController.navigate(NavScreen.Login.route) {
+                                                popUpTo(NavScreen.Login.route) {
+                                                    inclusive = true
+                                                }
+                                            }
+                                        }
                                     )
                                 }
                                 composable(NavScreen.VerifyEmail.route) {

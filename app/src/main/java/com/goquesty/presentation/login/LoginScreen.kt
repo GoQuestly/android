@@ -215,6 +215,7 @@ private fun LoginScreenContent(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
                         ),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp)
                     ) {
                         Column(
                             modifier = Modifier
