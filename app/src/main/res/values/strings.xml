@@ -33,4 +33,11 @@
     <string name="error_oops">Oops!</string>
     <string name="error_check_connection_and_retry">Check your internet connection and try again.</string>
     <string name="try_again">Try again</string>
+    <string name="error_invalid_verification_code">Invalid verification code. Please try again</string>
+    <string name="email_verified_successfully">Email verified successfully</string>
+    <string name="verification_code_resent">Verification code resent</string>
+    <string name="please_enter_code_from_email">Please text the code from your email</string>
+    <string name="verification_code">Verification code</string>
+    <string name="resend_code">Resend code</string>
+    <string name="ok">OK</string>
 </resources>

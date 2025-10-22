@@ -64,15 +64,24 @@ class RegisterViewModel @Inject constructor(
                 email = _state.value.email,
                 name = _state.value.name,
                 password = _state.value.password
-            ).also {
-                _state.update { it.copy(isLoading = false) }
-            }.onSuccess {
-                _state.update { it.copy(isRegistrationSuccessful = true) }
+            ).onSuccess {
+                authRepository.sendVerificationCode()
+                _state.update { it.copy(isRegistrationSuccessful = true, isLoading = false) }
             }.onFailure { error ->
                 if (error is BadRequestException) {
-                    _state.update { it.copy(emailError = context.getString(R.string.error_email_already_exists)) }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            emailError = context.getString(R.string.error_email_already_exists)
+                        )
+                    }
                 } else {
-                    _state.update { it.copy(generalError = context.getString(R.string.error_something_went_wrong)) }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            generalError = context.getString(R.string.error_something_went_wrong)
+                        )
+                    }
                 }
             }
         }

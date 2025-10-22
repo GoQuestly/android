@@ -6,6 +6,8 @@ import com.goquesty.data.remote.dto.LoginRequestDto
 import com.goquesty.data.remote.dto.RegisterRequestDto
 import com.goquesty.data.remote.dto.ResetPasswordRequestDto
 import com.goquesty.data.remote.dto.UserDto
+import com.goquesty.data.remote.dto.VerificationStatusResponseDto
+import com.goquesty.data.remote.dto.VerifyEmailRequestDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -20,6 +22,18 @@ interface ApiService {
 
     @POST("/auth/request-password-reset")
     suspend fun requestPasswordReset(@Body request: ResetPasswordRequestDto)
+
+    @RequiresAuth
+    @GET("/auth/verification-status")
+    suspend fun getVerificationStatus(): VerificationStatusResponseDto
+
+    @RequiresAuth
+    @POST("/auth/send-verification-code")
+    suspend fun sendVerificationCode()
+
+    @RequiresAuth
+    @POST("/auth/verify-email")
+    suspend fun verifyEmail(@Body request: VerifyEmailRequestDto)
 
     @RequiresAuth
     @GET("/user/profile")

@@ -22,14 +22,14 @@ fun NavGraphBuilder.mainGraph(
     ) {
         composable(NavScreen.VerifyEmail.route) {
             VerifyEmailScreen(
-                onVerified = {
+                onVerificationSuccess = {
                     navController.navigate(NavScreen.Home.route) {
                         popUpTo(NavScreen.VerifyEmail.route) {
                             inclusive = true
                         }
                     }
                 },
-                onLogout = onLogout
+                onLogoutClick = onLogout
             )
         }
 

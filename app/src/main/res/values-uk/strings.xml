@@ -35,4 +35,11 @@
     <string name="error_oops">Йой!</string>
     <string name="error_check_connection_and_retry">Перевірте підключення до інтернету та спробуйте ще раз.</string>
     <string name="try_again">Спробувати ще раз</string>
+    <string name="error_invalid_verification_code">Невірний код підтвердження. Будь ласка, спробуйте ще раз</string>
+    <string name="email_verified_successfully">Електронну адресу успішно підтверджено</string>
+    <string name="verification_code_resent">Код підтвердження надіслано повторно</string>
+    <string name="please_enter_code_from_email">Будь ласка, введіть код, надісланий на вашу електронну адресу</string>
+    <string name="verification_code">Код підтвердження</string>
+    <string name="resend_code">Надіслати код повторно</string>
+    <string name="ok">ОК</string>
 </resources>
