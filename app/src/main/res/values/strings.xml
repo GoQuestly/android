@@ -40,4 +40,11 @@
     <string name="verification_code">Verification code</string>
     <string name="resend_code">Resend code</string>
     <string name="ok">OK</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="profile_updated_successfully">Profile update succesfully</string>
+    <string name="avatar_updated_successfully">Avatar updated successfully</string>
+    <string name="logout">Logout</string>
+    <string name="save_changes">Save changes</string>
+    <string name="change_photo">Change photo</string>
 </resources>

@@ -113,6 +113,7 @@ dependencies {
     debugImplementation(libs.chucker.debug)
     releaseImplementation(libs.chucker.release)
     implementation(libs.androidx.splashscreen)
+    implementation(libs.coil.compose)
 }
 
 configurations.all {

@@ -2,7 +2,6 @@ package com.goquesty.presentation.verifyEmail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,11 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -52,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.goquesty.R
 import com.goquesty.presentation.core.components.FullScreenLoader
+import com.goquesty.presentation.core.components.button.LogoutButton
 import com.goquesty.presentation.core.components.button.PrimaryButton
 import com.goquesty.presentation.core.components.button.SecondaryButton
 import com.goquesty.presentation.core.components.textField.AppTextField
@@ -132,25 +129,14 @@ private fun VerifyEmailScreenContent(
                     .windowInsetsPadding(WindowInsets.statusBars)
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                Box(
+                LogoutButton(
+                    onClick = onLogoutClick,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(top = 20.dp, end = 20.dp)
-                        .size(50.dp)
-                        .clickable(onClick = onLogoutClick)
-                        .background(
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = CircleShape
-                        ),
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.Logout,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(25.dp)
-                            .align(Alignment.Center),
-                    )
-                }
+                        .padding(
+                            top = 20.dp, end = 20.dp
+                        )
+                )
             }
         }
     ) { paddingValues ->

@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.goquesty.presentation.home.HomeScreen
+import com.goquesty.presentation.profile.ProfileScreen
 import com.goquesty.presentation.verifyEmail.VerifyEmailScreen
 
 fun NavGraphBuilder.mainGraph(
@@ -34,8 +35,12 @@ fun NavGraphBuilder.mainGraph(
         }
 
         composable(NavScreen.Home.route) {
-            HomeScreen(
-                onLogout = onLogout
+            HomeScreen()
+        }
+
+        composable(NavScreen.Profile.route) {
+            ProfileScreen(
+                onLogoutClick = onLogout
             )
         }
     }

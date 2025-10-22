@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -56,7 +54,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.goquesty.R
 import com.goquesty.presentation.core.components.FullScreenLoader
-import com.goquesty.presentation.core.components.button.GoogleSignInButton
 import com.goquesty.presentation.core.components.button.PrimaryButton
 import com.goquesty.presentation.core.components.button.SecondaryButton
 import com.goquesty.presentation.core.components.textField.AppTextField
@@ -286,36 +283,36 @@ private fun LoginScreenContent(
                                     textAlign = TextAlign.Center
                                 )
                             }
+//
+//                            Spacer(modifier = Modifier.height(16.dp))
+//
+//                            Row(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                verticalAlignment = Alignment.CenterVertically
+//                            ) {
+//                                HorizontalDivider(
+//                                    modifier = Modifier.weight(1f),
+//                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+//                                )
+//                                Text(
+//                                    text = stringResource(R.string.or),
+//                                    modifier = Modifier.padding(horizontal = 16.dp),
+//                                    fontSize = 12.sp,
+//                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+//                                    fontWeight = FontWeight.Medium
+//                                )
+//                                HorizontalDivider(
+//                                    modifier = Modifier.weight(1f),
+//                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+//                                )
+//                            }
+//
+//                            Spacer(modifier = Modifier.height(24.dp))
 
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                HorizontalDivider(
-                                    modifier = Modifier.weight(1f),
-                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                                )
-                                Text(
-                                    text = stringResource(R.string.or),
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                                    fontWeight = FontWeight.Medium
-                                )
-                                HorizontalDivider(
-                                    modifier = Modifier.weight(1f),
-                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            GoogleSignInButton(
-                                onClick = onGoogleSignInClick,
-                                enabled = !state.isLoading
-                            )
+//                            GoogleSignInButton(
+//                                onClick = onGoogleSignInClick,
+//                                enabled = !state.isLoading
+//                            )
                         }
                     }
                 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.goquesty.domain.model.AuthState
+import com.goquesty.presentation.core.components.MainScaffold
 import com.goquesty.presentation.core.navigation.NavGraph
 import com.goquesty.presentation.core.navigation.authGraph
 import com.goquesty.presentation.core.navigation.mainGraph
@@ -41,22 +42,25 @@ fun AppNavHost(
         }
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
-    ) {
-        authGraph(
+    MainScaffold(navController = navController) { modifier ->
+        NavHost(
             navController = navController,
-            onAuthSuccess = onAuthStateChanged
-        )
+            startDestination = startDestination,
+            modifier = modifier
+        ) {
+            authGraph(
+                navController = navController,
+                onAuthSuccess = onAuthStateChanged
+            )
 
-        mainGraph(
-            navController = navController,
-            startWithVerification = when (authState) {
-                is AuthState.Authenticated -> !authState.isEmailVerified
-                else -> false
-            },
-            onLogout = onLogout
-        )
+            mainGraph(
+                navController = navController,
+                startWithVerification = when (authState) {
+                    is AuthState.Authenticated -> !authState.isEmailVerified
+                    else -> false
+                },
+                onLogout = onLogout
+            )
+        }
     }
 }
