@@ -29,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -48,12 +47,6 @@ import com.goquesty.presentation.core.components.button.SecondaryButton
 import com.goquesty.presentation.core.components.textField.AppTextField
 import com.goquesty.presentation.core.preview.ThemePreview
 import com.goquesty.presentation.core.theme.GoquestlyTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-
-private object ResetPasswordScreenDefaults {
-    const val SUCCESS_MESSAGE_DELAY_MILLIS = 1500L
-}
 
 @Composable
 fun ResetPasswordScreen(
@@ -64,17 +57,13 @@ fun ResetPasswordScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val successMessage = stringResource(R.string.reset_link_sent_successfully)
 
-    val currentOpenLogin by rememberUpdatedState(openLogin)
     LaunchedEffect(state.isLinkSent) {
         if (state.isLinkSent) {
-            launch {
-                snackbarHostState.showSnackbar(
-                    message = successMessage,
-                    duration = SnackbarDuration.Short
-                )
-            }
-            delay(ResetPasswordScreenDefaults.SUCCESS_MESSAGE_DELAY_MILLIS)
-            currentOpenLogin()
+            snackbarHostState.showSnackbar(
+                message = successMessage,
+                duration = SnackbarDuration.Short
+            )
+            viewModel.onLinkSentHandled()
         }
     }
 
@@ -154,7 +143,7 @@ private fun ResetPasswordScreenContent(
                         placeholder = stringResource(R.string.email),
                         isError = state.emailError != null,
                         errorMessage = state.emailError,
-                        enabled = !state.isLoading && !state.isLinkSent,
+                        enabled = !state.isLoading,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Done

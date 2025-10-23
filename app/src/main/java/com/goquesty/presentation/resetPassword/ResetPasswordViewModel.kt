@@ -27,8 +27,12 @@ class ResetPasswordViewModel @Inject constructor(
         _state.update { it.copy(email = email, emailError = null) }
     }
 
+    fun onLinkSentHandled() {
+        _state.update { it.copy(isLinkSent = false) }
+    }
+
     fun sendResetPasswordLink() {
-        if (state.value.isLinkSent || !validateFields()) {
+        if (!validateFields()) {
             return
         }
 
