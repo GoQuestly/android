@@ -12,5 +12,5 @@ data class ProfileState(
     val successMessage: String? = null
 ) {
     val hasChanges: Boolean
-        get() = name != editableName && editableName.isNotBlank()
+        get() = name != editableName.trim() && editableName.isNotBlank()
 }
