@@ -1,50 +1,55 @@
 package com.goquesty.presentation.core.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Green11,
+    secondary = GreenDC,
+    tertiary = Green10,
+    surface = Black1F1,
+    onSurface = White,
+    onSurfaceVariant = Gray9C,
+    primaryContainer = Black1F2,
+    onPrimaryContainer = WhiteF6,
+    outline = Gray4B,
+    error = RedFC,
+    onTertiary = Green11,
+    surfaceVariant = Black10,
+    secondaryContainer = Black18,
+    onSecondary = Black1F1,
+    surfaceContainer = Black1F2
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Green11,
+    secondary = GreenDC,
+    tertiary = GreenCF,
+    surface = WhiteF6,
+    onSurface = Black11,
+    onSurfaceVariant = Gray4B,
+    primaryContainer = White,
+    onPrimaryContainer = Black10,
+    outline = GrayD1,
+    error = RedB9,
+    onTertiary = Black11,
+    surfaceVariant = White,
+    secondaryContainer = White,
+    onSecondary = Black11,
+    surfaceContainer = GrayD1
 )
 
 @Composable
 fun GoquestlyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -52,6 +57,10 @@ fun GoquestlyTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalContentColor provides colorScheme.onSurface,
+            content = content
+        )
+    }
 }

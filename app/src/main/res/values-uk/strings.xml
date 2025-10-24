@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="your_journey_begins_here">Ваша подорож починається тут</string>
+    <string name="login">Увійти</string>
+    <string name="register">Реєстрація</string>
+    <string name="participate_in_interactive_quests">Беріть участь в інтерактивних квестах</string>
+    <string name="email">Адреса електронної пошти</string>
+    <string name="name">Ім\'я</string>
+    <string name="password">Пароль</string>
+    <string name="confirm_password">Підтвердіть пароль</string>
+    <string name="already_have_an_account">Вже є акаунт?</string>
+    <string name="or">АБО</string>
+    <string name="continue_with_google">Продовжити через Google</string>
+    <string name="sign_in_with_google">Увійти через Google</string>
+
+    <string name="hide_password">Приховати пароль</string>
+    <string name="show_password">Показати пароль</string>
+
+    <string name="error_email_required">Електронна адреса обов\'язкова</string>
+    <string name="error_email_invalid">Невірний формат електронної адреси</string>
+    <string name="error_name_required">Ім\'я обов\'язкове</string>
+    <string name="error_password_required">Пароль обов\'язковий</string>
+    <string name="error_password_too_short">Пароль має містити щонайменше %d символів</string>
+    <string name="error_confirm_password_required">Будь ласка, підтвердіть пароль</string>
+    <string name="error_passwords_not_match">Паролі не співпадають</string>
+    <string name="error_email_already_exists">Акаунт з цією електронною адресою вже існує</string>
+    <string name="error_something_went_wrong">Щось пішло не так. Будь ласка, спробуйте ще раз.</string>
+    <string name="error_invalid_credentials">Неправильна адреса електронної пошти або пароль. Будь ласка, спробуйте ще раз.</string>
+    <string name="forgot_password">Забули пароль?</string>
+    <string name="welcome_to">Вітаємо у</string>
+    <string name="reset_password">Скинути пароль</string>
+    <string name="send_reset_link">Надіслати посилання</string>
+    <string name="back_to_login">Повернутися до входу</string>
+    <string name="reset_link_sent_successfully">Посилання для скидання паролю успішно надіслано</string>
+    <string name="error_oops">Йой!</string>
+    <string name="error_check_connection_and_retry">Перевірте підключення до інтернету та спробуйте ще раз.</string>
+    <string name="try_again">Спробувати ще раз</string>
+    <string name="error_invalid_verification_code">Невірний код підтвердження. Будь ласка, спробуйте ще раз</string>
+    <string name="email_verified_successfully">Електронну адресу успішно підтверджено</string>
+    <string name="verification_code_resent">Код підтвердження надіслано повторно</string>
+    <string name="please_enter_code_from_email">Будь ласка, введіть код, надісланий на вашу електронну адресу</string>
+    <string name="verification_code">Код підтвердження</string>
+    <string name="resend_code">Надіслати код повторно</string>
+    <string name="ok">ОК</string>
+    <string name="home">Головна</string>
+    <string name="profile">Профіль</string>
+    <string name="profile_updated_successfully">Профіль успішно оновлено</string>
+    <string name="avatar_updated_successfully">Зображення профілю успішно оновлено</string>
+    <string name="logout">Вийти</string>
+    <string name="save_changes">Зберегти зміни</string>
+    <string name="change_photo">Змінити фото</string>
+</resources>

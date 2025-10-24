@@ -7,24 +7,32 @@ coreKtx = "1.17.0"
 lifecycleRuntimeKtx = "2.8.5"
 activityCompose = "1.9.2"
 composeBom = "2024.10.00"
+composeIcons = "1.7.6"
 
 hilt = "2.57.2"
 hiltNavigationCompose = "1.2.0"
 
-retrofit = "2.11.0"
-okhttp = "4.12.0"
-kotlinxSerialization = "1.7.3"
+retrofit = "3.0.0"
+okhttp = "5.2.1"
+kotlinxSerialization = "1.9.0"
 retrofitKotlinxSerialization = "1.0.0"
+playServicesAuth = "21.4.0"
+chucker = "4.0.0"
+splashScreen = "1.0.1"
+coilCompose = "2.4.0"
+
 
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
+androidxDatastore = "1.1.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "composeIcons" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -41,6 +49,13 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
+chucker-release = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
+androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "androidxDatastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidxDatastore" }
+androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
