@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "com.goquesty"
+    namespace = "com.goquestly"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.goquesty"
+        applicationId = "com.goquestly"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
