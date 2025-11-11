@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goquestly.R
+import com.goquestly.data.auth.GoogleSignInCancelledException
 import com.goquestly.domain.exception.UnauthorizedException
 import com.goquestly.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,11 +52,9 @@ class LoginViewModel @Inject constructor(
                 password = _state.value.password
             ).also {
                 _state.update { it.copy(isLoading = false) }
-            }.onSuccess { user ->
+            }.onSuccess {
                 _state.update {
-                    it.copy(
-                        isLoginSuccessful = true,
-                    )
+                    it.copy(isLoginSuccessful = true)
                 }
             }.onFailure { error ->
                 if (error is UnauthorizedException) {
@@ -68,7 +67,43 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onGoogleSignInClick() {
+        _state.update {
+            it.copy(
+                isLoading = true,
+                generalError = null,
+                emailError = null,
+                passwordError = null
+            )
+        }
 
+        viewModelScope.launch {
+            authRepository.signInWithGoogle()
+                .also {
+                    _state.update { it.copy(isLoading = false) }
+                }
+                .onSuccess {
+                    _state.update { it.copy(isLoginSuccessful = true) }
+                }
+                .onFailure { error ->
+                    when (error) {
+                        is GoogleSignInCancelledException -> {
+                            _state.update { it.copy(generalError = null) }
+                        }
+
+                        is UnauthorizedException -> {
+                            _state.update {
+                                it.copy(generalError = context.getString(R.string.error_invalid_credentials))
+                            }
+                        }
+
+                        else -> {
+                            _state.update {
+                                it.copy(generalError = context.getString(R.string.error_something_went_wrong))
+                            }
+                        }
+                    }
+                }
+        }
     }
 
     private fun validateFields(): Boolean {

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goquestly.R
+import com.goquestly.data.auth.GoogleSignInCancelledException
 import com.goquestly.domain.exception.BadRequestException
 import com.goquestly.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,7 +89,45 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun onGoogleSignInClick() {
+        _state.update {
+            it.copy(
+                isLoading = true,
+                generalError = null,
+                emailError = null,
+                nameError = null,
+                passwordError = null,
+                confirmPasswordError = null,
+            )
+        }
 
+        viewModelScope.launch {
+            authRepository.signInWithGoogle()
+                .also {
+                    _state.update { it.copy(isLoading = false) }
+                }
+                .onSuccess {
+                    _state.update { it.copy(isRegistrationSuccessful = true) }
+                }
+                .onFailure { error ->
+                    when (error) {
+                        is GoogleSignInCancelledException -> {
+                            _state.update { it.copy(generalError = null) }
+                        }
+
+                        is BadRequestException -> {
+                            _state.update {
+                                it.copy(generalError = context.getString(R.string.error_google_sign_in_failed))
+                            }
+                        }
+
+                        else -> {
+                            _state.update {
+                                it.copy(generalError = context.getString(R.string.error_something_went_wrong))
+                            }
+                        }
+                    }
+                }
+        }
     }
 
     private fun validateFields(): Boolean {

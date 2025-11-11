@@ -15,6 +15,8 @@ interface AuthRepository {
         password: String
     ): Result<User>
 
+    suspend fun signInWithGoogle(): Result<User>
+
     suspend fun requestPasswordReset(email: String): Result<Unit>
 
     suspend fun getVerificationStatus(): Result<VerificationStatus>

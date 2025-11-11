@@ -2,6 +2,7 @@ package com.goquestly.data.remote
 
 import com.goquestly.data.remote.annotation.RequiresAuth
 import com.goquestly.data.remote.dto.AuthResponseDto
+import com.goquestly.data.remote.dto.GoogleSignInRequestDto
 import com.goquestly.data.remote.dto.JoinSessionRequestDto
 import com.goquestly.data.remote.dto.LoginRequestDto
 import com.goquestly.data.remote.dto.PaginatedResponseDto
@@ -32,6 +33,9 @@ interface ApiService {
 
     @POST("/auth/login")
     suspend fun login(@Body request: LoginRequestDto): AuthResponseDto
+
+    @POST("/auth/google/mobile")
+    suspend fun signInWithGoogle(@Body request: GoogleSignInRequestDto): AuthResponseDto
 
     @POST("/auth/request-password-reset")
     suspend fun requestPasswordReset(@Body request: ResetPasswordRequestDto)
