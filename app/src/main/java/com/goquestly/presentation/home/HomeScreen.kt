@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.goquestly.R
 import com.goquestly.domain.model.QuestSessionSummary
 import com.goquestly.presentation.core.pagination.LazyListPaginator
@@ -41,9 +43,20 @@ import kotlin.time.Instant.Companion.parse
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    navBackStackEntry: NavBackStackEntry,
     onSessionClick: (Int) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(navBackStackEntry) {
+        navBackStackEntry.savedStateHandle.getStateFlow<Boolean?>("session_left", null)
+            .collect { sessionLeft ->
+                if (sessionLeft == true) {
+                    viewModel.onRefresh()
+                    navBackStackEntry.savedStateHandle.remove<Boolean>("session_left")
+                }
+            }
+    }
 
     HomeScreenContent(
         state = state,

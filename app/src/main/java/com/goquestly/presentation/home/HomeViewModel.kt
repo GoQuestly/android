@@ -1,9 +1,12 @@
 package com.goquestly.presentation.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goquestly.R
 import com.goquestly.domain.repository.SessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -48,7 +52,7 @@ class HomeViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             isInitialLoading = false,
-                            error = throwable.message
+                            error = context.getString(R.string.error_check_connection_and_retry)
                         )
                     }
                 }
@@ -120,7 +124,7 @@ class HomeViewModel @Inject constructor(
                             pagination = it.pagination.withError(
                                 error = throwable.message ?: "Unknown error"
                             ),
-                            error = throwable.message
+                            error = context.getString(R.string.error_check_connection_and_retry)
                         )
                     }
                 }

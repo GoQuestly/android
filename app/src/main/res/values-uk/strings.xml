@@ -74,4 +74,9 @@
     <string name="duration_hours_only">%1$d год</string>
     <string name="duration_minutes_only">%1$d хв</string>
     <string name="participants_title">Учасники</string>
+    <string name="leave_session">Покинути сесію</string>
+    <string name="leave_session_confirmation_title">Покинути сесію?</string>
+    <string name="leave_session_confirmation_message">Ви впевнені, що хочете покинути цю сесію? Ви можете підʼєднатися знову, використовуючи посилання з запрошенням.</string>
+    <string name="leave">Покинути</string>
+    <string name="cancel">Скасувати</string>
 </resources>

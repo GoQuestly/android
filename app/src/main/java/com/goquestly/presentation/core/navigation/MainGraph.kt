@@ -8,7 +8,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.goquestly.presentation.home.HomeScreen
 import com.goquestly.presentation.profile.ProfileScreen
-import com.goquestly.presentation.sessiondetails.SessionDetailsScreen
+import com.goquestly.presentation.sessionDetails.SessionDetailsScreen
 import com.goquestly.presentation.verifyEmail.VerifyEmailScreen
 
 fun NavGraphBuilder.mainGraph(
@@ -38,7 +38,9 @@ fun NavGraphBuilder.mainGraph(
         }
 
         composable(NavScreen.Home.route) {
+            val navBackStackEntry = it
             HomeScreen(
+                navBackStackEntry = navBackStackEntry,
                 onSessionClick = { sessionId ->
                     navController.navigate(NavScreen.SessionDetails.createRoute(sessionId))
                 }
@@ -58,7 +60,14 @@ fun NavGraphBuilder.mainGraph(
             )
         ) {
             SessionDetailsScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { sessionLeft ->
+                    if (sessionLeft) {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("session_left", true)
+                    }
+                    navController.popBackStack()
+                }
             )
         }
     }

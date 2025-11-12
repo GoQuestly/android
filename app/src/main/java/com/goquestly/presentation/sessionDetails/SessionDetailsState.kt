@@ -1,4 +1,4 @@
-package com.goquestly.presentation.sessiondetails
+package com.goquestly.presentation.sessionDetails
 
 import com.goquestly.domain.model.Participant
 import com.goquestly.domain.model.QuestSession
@@ -8,5 +8,6 @@ data class SessionDetailsState(
     val participants: List<Participant> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isParticipantsSheetOpen: Boolean = false
+    val isParticipantsSheetOpen: Boolean = false,
+    val isLeaveConfirmationSheetOpen: Boolean = false
 )

@@ -72,4 +72,9 @@
     <string name="duration_hours_only">%1$d hr</string>
     <string name="duration_minutes_only">%1$d min</string>
     <string name="participants_title">Participants</string>
+    <string name="leave_session">Leave Session</string>
+    <string name="leave_session_confirmation_title">Leave Session?</string>
+    <string name="leave_session_confirmation_message">Are you sure you want to leave this session? You can rejoin later using the invite link.</string>
+    <string name="leave">Leave</string>
+    <string name="cancel">Cancel</string>
 </resources>

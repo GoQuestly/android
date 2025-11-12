@@ -1,4 +1,4 @@
-package com.goquestly.presentation.sessiondetails
+package com.goquestly.presentation.sessionDetails
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.People
@@ -55,6 +56,8 @@ import com.goquestly.R
 import com.goquestly.domain.model.Participant
 import com.goquestly.domain.model.ParticipationStatus
 import com.goquestly.domain.model.QuestSession
+import com.goquestly.domain.model.SessionStatus
+import com.goquestly.presentation.core.components.ConfirmationBottomSheet
 import com.goquestly.presentation.core.components.SessionStatusBadge
 import com.goquestly.presentation.core.components.button.PrimaryButton
 import com.goquestly.presentation.core.preview.ThemePreview
@@ -64,35 +67,21 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @Composable
-private fun formatDuration(minutes: Int): String {
-    val hours = minutes / 60
-    val remainingMinutes = minutes % 60
-
-    return when {
-        hours > 0 && remainingMinutes > 0 -> stringResource(
-            R.string.duration_hours_minutes,
-            hours,
-            remainingMinutes
-        )
-
-        hours > 0 -> stringResource(R.string.duration_hours_only, hours)
-        else -> stringResource(R.string.duration_minutes_only, remainingMinutes)
-    }
-}
-
-@Composable
 fun SessionDetailsScreen(
     viewModel: SessionDetailsViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    onNavigateBack: (sessionLeft: Boolean) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     SessionDetailsContent(
         state = state,
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = { onNavigateBack(false) },
         onViewAllParticipants = viewModel::toggleParticipantsSheet,
         onDismissParticipantsSheet = viewModel::toggleParticipantsSheet,
-        onStartSession = { }
+        onStartSession = { },
+        onShowLeaveConfirmation = viewModel::showLeaveConfirmation,
+        onDismissLeaveConfirmation = viewModel::dismissLeaveConfirmation,
+        onConfirmLeave = { viewModel.leaveSession { onNavigateBack(true) } }
     )
 }
 
@@ -103,7 +92,10 @@ private fun SessionDetailsContent(
     onNavigateBack: () -> Unit,
     onViewAllParticipants: () -> Unit,
     onDismissParticipantsSheet: () -> Unit,
-    onStartSession: () -> Unit
+    onStartSession: () -> Unit,
+    onShowLeaveConfirmation: () -> Unit,
+    onDismissLeaveConfirmation: () -> Unit,
+    onConfirmLeave: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -135,6 +127,19 @@ private fun SessionDetailsContent(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
+
+                        if (state.session?.status == SessionStatus.SCHEDULED) {
+                            IconButton(
+                                modifier = Modifier.align(Alignment.CenterEnd),
+                                onClick = onShowLeaveConfirmation
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ExitToApp,
+                                    contentDescription = stringResource(R.string.leave_session),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     }
                 },
             )
@@ -187,6 +192,17 @@ private fun SessionDetailsContent(
             ) {
                 ParticipantsBottomSheet(participants = state.participants)
             }
+        }
+
+        if (state.isLeaveConfirmationSheetOpen) {
+            ConfirmationBottomSheet(
+                title = stringResource(R.string.leave_session_confirmation_title),
+                message = stringResource(R.string.leave_session_confirmation_message),
+                confirmText = stringResource(R.string.leave),
+                cancelText = stringResource(R.string.cancel),
+                onConfirm = onConfirmLeave,
+                onDismiss = onDismissLeaveConfirmation
+            )
         }
     }
 }
@@ -502,6 +518,23 @@ private fun ParticipantItem(participant: Participant) {
     }
 }
 
+@Composable
+private fun formatDuration(minutes: Int): String {
+    val hours = minutes / 60
+    val remainingMinutes = minutes % 60
+
+    return when {
+        hours > 0 && remainingMinutes > 0 -> stringResource(
+            R.string.duration_hours_minutes,
+            hours,
+            remainingMinutes
+        )
+
+        hours > 0 -> stringResource(R.string.duration_hours_only, hours)
+        else -> stringResource(R.string.duration_minutes_only, remainingMinutes)
+    }
+}
+
 @OptIn(ExperimentalTime::class)
 @ThemePreview
 @Composable
@@ -552,7 +585,10 @@ private fun SessionDetailsScreenPreview() {
             onNavigateBack = {},
             onViewAllParticipants = {},
             onDismissParticipantsSheet = {},
-            onStartSession = {}
+            onStartSession = {},
+            onShowLeaveConfirmation = {},
+            onDismissLeaveConfirmation = {},
+            onConfirmLeave = {}
         )
     }
 }
