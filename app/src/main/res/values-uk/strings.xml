@@ -50,4 +50,15 @@
     <string name="save_changes">Зберегти зміни</string>
     <string name="change_photo">Змінити фото</string>
     <string name="error_google_sign_in_failed">Не вдалося продовжити через Google. Будь ласка, спробуйте ще раз.</string>
+    <string name="my_sessions">Мої Сесії</string>
+    <string name="no_sessions">Немає Сесій</string>
+    <string name="no_sessions_message">Ви ще не приєдналися до жодної сесії квесту</string>
+    <string name="error">Помилка</string>
+    <string name="progress">Прогрес</string>
+    <string name="in_progress">В Процесі</string>
+    <string name="scheduled">Заплановано</string>
+    <string name="completed">Завершено</string>
+    <string name="starts_format">Початок: %s</string>
+    <string name="completed_format">Завершено: %s</string>
+    <string name="error_failed_to_load_sessions">Не вдалося завантажити сесії</string>
 </resources>

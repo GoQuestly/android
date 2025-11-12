@@ -48,4 +48,15 @@
     <string name="save_changes">Save changes</string>
     <string name="change_photo">Change photo</string>
     <string name="error_google_sign_in_failed">Google sign-in failed. Please try again.</string>
+    <string name="my_sessions">My Sessions</string>
+    <string name="no_sessions">No Sessions</string>
+    <string name="no_sessions_message">You haven\'t joined any quest sessions yet</string>
+    <string name="error">Error</string>
+    <string name="progress">Progress</string>
+    <string name="in_progress">In Progress</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="completed">Completed</string>
+    <string name="starts_format">Starts: %s</string>
+    <string name="completed_format">Completed: %s</string>
+    <string name="error_failed_to_load_sessions">Failed to load sessions</string>
 </resources>
