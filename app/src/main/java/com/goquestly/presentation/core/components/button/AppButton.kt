@@ -31,7 +31,7 @@ fun AppButton(
             containerColor = backgroundColor,
             contentColor = contentColor,
             disabledContainerColor = backgroundColor.copy(alpha = 0.5f),
-            disabledContentColor = contentColor.copy(alpha = 0.5f)
+            disabledContentColor = contentColor.copy(alpha = 0.8f)
         )
     ) {
         Text(

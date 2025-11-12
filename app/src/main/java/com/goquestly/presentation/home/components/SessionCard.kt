@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.goquestly.R
 import com.goquestly.domain.model.QuestSessionSummary
+import com.goquestly.presentation.core.components.SessionStatusBadge
 import com.goquestly.util.formatDateTime
 import kotlin.time.ExperimentalTime
 
@@ -37,12 +38,6 @@ fun SessionCard(
         (session.passedQuestPointCount.toFloat() / session.questPointCount.toFloat() * 100).toInt()
     } else {
         0
-    }
-
-    val status = when {
-        session.endDate != null -> SessionStatus.COMPLETED
-        session.isActive -> SessionStatus.IN_PROGRESS
-        else -> SessionStatus.SCHEDULED
     }
 
     Card(
@@ -74,16 +69,18 @@ fun SessionCard(
                     modifier = Modifier.width(8.dp)
                 )
 
-                SessionStatusBadge(status = status)
+                SessionStatusBadge(status = session.status)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             val dateText = if (session.endDate != null) {
-                stringResource(R.string.completed_format, formatDateTime(session.endDate))
+                "${stringResource(R.string.completed_format)} ${formatDateTime(session.endDate)}"
             } else {
-                stringResource(R.string.starts_format, formatDateTime(session.startDate))
+                "${stringResource(R.string.starts_at)} ${formatDateTime(session.startDate)}"
             }
+
+
 
             Text(
                 text = dateText,
@@ -119,49 +116,6 @@ fun SessionCard(
             SessionProgressBar(progress = progress / 100f)
         }
     }
-}
-
-enum class SessionStatus {
-    IN_PROGRESS,
-    SCHEDULED,
-    COMPLETED
-}
-
-@Composable
-fun SessionStatusBadge(
-    status: SessionStatus,
-    modifier: Modifier = Modifier
-) {
-    val text = when (status) {
-        SessionStatus.IN_PROGRESS -> stringResource(R.string.in_progress)
-        SessionStatus.SCHEDULED -> stringResource(R.string.scheduled)
-        SessionStatus.COMPLETED -> stringResource(R.string.completed)
-    }
-
-    val backgroundColor = when (status) {
-        SessionStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
-        SessionStatus.SCHEDULED -> MaterialTheme.colorScheme.surfaceContainer
-        SessionStatus.COMPLETED -> MaterialTheme.colorScheme.tertiaryContainer
-    }
-
-    val textColor = when (status) {
-        SessionStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSecondary
-        SessionStatus.SCHEDULED -> MaterialTheme.colorScheme.onSecondaryContainer
-        SessionStatus.COMPLETED -> MaterialTheme.colorScheme.onTertiaryContainer
-    }
-
-    Text(
-        text = text,
-        modifier = modifier
-            .background(
-                color = backgroundColor,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Medium,
-        color = textColor
-    )
 }
 
 @Composable

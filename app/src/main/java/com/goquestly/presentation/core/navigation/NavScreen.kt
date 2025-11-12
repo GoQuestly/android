@@ -8,6 +8,9 @@ sealed class NavScreen(val route: String) {
     data object VerifyEmail : NavScreen("verify_email")
     data object Home : NavScreen("home")
     data object Profile : NavScreen("profile")
+    data object SessionDetails : NavScreen("session_details/{sessionId}") {
+        fun createRoute(sessionId: Int) = "session_details/$sessionId"
+    }
 
     companion object {
         private val screensWithBottomNav by lazy {

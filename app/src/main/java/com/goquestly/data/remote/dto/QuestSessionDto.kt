@@ -24,6 +24,6 @@ data class QuestSessionDto(
     val passedQuestPointCount: Int? = null,
     val questPhotoUrl: String? = null,
     val questDescription: String? = null,
-    val questMaxDurationMinutes: Int? = null,
-    val startPointName: String? = null
+    val questMaxDurationMinutes: Int,
+    val startPointName: String
 )

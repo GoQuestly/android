@@ -4,27 +4,32 @@ import com.goquestly.data.remote.dto.QuestSessionDto
 import com.goquestly.data.remote.dto.QuestSessionSummaryDto
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.QuestSessionSummary
+import com.goquestly.util.API_BASE_URL
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-fun QuestSessionDto.toDomainModel() = QuestSession(
-    id = questSessionId,
-    questId = questId,
-    questTitle = questTitle,
-    startDate = startDate,
-    endDate = endDate,
-    endReason = endReason,
-    inviteToken = inviteToken,
-    participants = participants.map { it.toDomainModel() },
-    isActive = isActive,
-    participantCount = participantCount,
-    questPointCount = questPointCount ?: 0,
-    passedQuestPointCount = passedQuestPointCount ?: 0,
-    questPhotoUrl = questPhotoUrl,
-    questDescription = questDescription,
-    questMaxDurationMinutes = questMaxDurationMinutes,
-    startPointName = startPointName
-)
+fun QuestSessionDto.toDomainModel(): QuestSession {
+    return QuestSession(
+        id = questSessionId,
+        questId = questId,
+        questTitle = questTitle,
+        startDate = startDate,
+        endDate = endDate,
+        endReason = endReason,
+        inviteToken = inviteToken,
+        participants = participants.map { it.toDomainModel() },
+        isActive = isActive,
+        participantCount = participantCount,
+        questPointCount = questPointCount ?: 0,
+        passedQuestPointCount = passedQuestPointCount ?: 0,
+        questPhotoUrl = API_BASE_URL.removeSuffix("/").let { baseUrl ->
+            questPhotoUrl?.removePrefix(baseUrl)?.let { baseUrl + it }
+        },
+        questDescription = questDescription,
+        questMaxDurationMinutes = questMaxDurationMinutes,
+        startPointName = startPointName
+    )
+}
 
 @OptIn(ExperimentalTime::class)
 fun QuestSessionSummaryDto.toDomainModel() = QuestSessionSummary(

@@ -2,10 +2,13 @@ package com.goquestly.presentation.core.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.goquestly.presentation.home.HomeScreen
 import com.goquestly.presentation.profile.ProfileScreen
+import com.goquestly.presentation.sessiondetails.SessionDetailsScreen
 import com.goquestly.presentation.verifyEmail.VerifyEmailScreen
 
 fun NavGraphBuilder.mainGraph(
@@ -35,12 +38,27 @@ fun NavGraphBuilder.mainGraph(
         }
 
         composable(NavScreen.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onSessionClick = { sessionId ->
+                    navController.navigate(NavScreen.SessionDetails.createRoute(sessionId))
+                }
+            )
         }
 
         composable(NavScreen.Profile.route) {
             ProfileScreen(
                 onLogoutClick = onLogout
+            )
+        }
+
+        composable(
+            route = NavScreen.SessionDetails.route,
+            arguments = listOf(
+                navArgument("sessionId") { type = NavType.IntType }
+            )
+        ) {
+            SessionDetailsScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }
