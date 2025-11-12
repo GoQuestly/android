@@ -116,6 +116,7 @@ dependencies {
     releaseImplementation(libs.chucker.release)
     implementation(libs.androidx.splashscreen)
     implementation(libs.coil.compose)
+    implementation(libs.socket.io)
 }
 
 configurations.all {
