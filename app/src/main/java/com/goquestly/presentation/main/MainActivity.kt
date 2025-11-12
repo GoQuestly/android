@@ -1,6 +1,7 @@
 package com.goquestly.presentation.main
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -24,12 +27,15 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
+    private var currentIntent by mutableStateOf<Intent?>(null)
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        currentIntent = intent
 
         splashScreen.setKeepOnScreenCondition {
             mainViewModel.state.value.isLoading
@@ -63,6 +69,7 @@ class MainActivity : ComponentActivity() {
                                 AppNavHost(
                                     navController = navController,
                                     authState = state.authState!!,
+                                    initialIntent = currentIntent,
                                     onAuthStateChanged = mainViewModel::checkAuthState,
                                     onLogout = mainViewModel::logout
                                 )
@@ -72,5 +79,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        currentIntent = intent
+        setIntent(intent)
     }
 }

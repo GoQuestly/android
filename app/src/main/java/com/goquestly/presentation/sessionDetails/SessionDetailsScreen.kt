@@ -69,19 +69,19 @@ import kotlin.time.Instant
 @Composable
 fun SessionDetailsScreen(
     viewModel: SessionDetailsViewModel = hiltViewModel(),
-    onNavigateBack: (sessionLeft: Boolean) -> Unit
+    onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     SessionDetailsContent(
         state = state,
-        onNavigateBack = { onNavigateBack(false) },
+        onNavigateBack = { onNavigateBack() },
         onViewAllParticipants = viewModel::toggleParticipantsSheet,
         onDismissParticipantsSheet = viewModel::toggleParticipantsSheet,
         onStartSession = { },
         onShowLeaveConfirmation = viewModel::showLeaveConfirmation,
         onDismissLeaveConfirmation = viewModel::dismissLeaveConfirmation,
-        onConfirmLeave = { viewModel.leaveSession { onNavigateBack(true) } }
+        onConfirmLeave = { viewModel.leaveSession { onNavigateBack() } }
     )
 }
 

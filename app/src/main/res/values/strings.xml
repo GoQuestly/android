@@ -77,4 +77,8 @@
     <string name="leave_session_confirmation_message">Are you sure you want to leave this session? You can rejoin later using the invite link.</string>
     <string name="leave">Leave</string>
     <string name="cancel">Cancel</string>
+    <string name="joining_session">Joining session…</string>
+    <string name="error_invalid_invite_link">Invalid invite link</string>
+    <string name="error_already_joined_session">You have already joined this session</string>
+    <string name="open_home">Open home</string>
 </resources>

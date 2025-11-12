@@ -5,11 +5,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.goquestly.presentation.home.HomeScreen
+import com.goquestly.presentation.invite.InviteHandlerScreen
 import com.goquestly.presentation.profile.ProfileScreen
 import com.goquestly.presentation.sessionDetails.SessionDetailsScreen
 import com.goquestly.presentation.verifyEmail.VerifyEmailScreen
+import com.goquestly.util.INVITE_DEEP_LINK_PREFIX
 
 fun NavGraphBuilder.mainGraph(
     navController: NavHostController,
@@ -60,13 +63,37 @@ fun NavGraphBuilder.mainGraph(
             )
         ) {
             SessionDetailsScreen(
-                onNavigateBack = { sessionLeft ->
-                    if (sessionLeft) {
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("session_left", true)
-                    }
+                onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = NavScreen.InviteHandler.route,
+            arguments = listOf(
+                navArgument("inviteToken") { type = NavType.StringType }
+            ),
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "$INVITE_DEEP_LINK_PREFIX/{inviteToken}"
+                }
+            )
+        ) {
+            InviteHandlerScreen(
+                onNavigateToSessionDetails = { sessionId ->
+                    navController.navigate(NavScreen.SessionDetails.createRoute(sessionId)) {
+                        popUpTo(NavScreen.Home.route) {
+                            inclusive = false
+                        }
+                    }
+                },
+                onNavigateToHome = {
+                    navController.navigate(NavScreen.Home.route) {
+                        popUpTo(NavScreen.Home.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

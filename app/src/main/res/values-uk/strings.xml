@@ -79,4 +79,8 @@
     <string name="leave_session_confirmation_message">Ви впевнені, що хочете покинути цю сесію? Ви можете підʼєднатися знову, використовуючи посилання з запрошенням.</string>
     <string name="leave">Покинути</string>
     <string name="cancel">Скасувати</string>
+    <string name="joining_session">Приєднання до сесії…</string>
+    <string name="error_invalid_invite_link">Неправильне посилання для запрошення</string>
+    <string name="error_already_joined_session">Ви вже приєдналися до цієї сесії.</string>
+    <string name="open_home">На головну</string>
 </resources>
