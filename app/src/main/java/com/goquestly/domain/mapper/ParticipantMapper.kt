@@ -11,8 +11,9 @@ fun ParticipantDto.toDomainModel() = Participant(
     userId = userId,
     userName = userName,
     joinedAt = joinedAt,
-    status = ParticipationStatus.entries.find { it.name == participationStatus }
-        ?: ParticipationStatus.PENDING,
+    status = ParticipationStatus.entries.find {
+        it.name.equals(participationStatus, ignoreCase = true)
+    } ?: ParticipationStatus.PENDING,
     rejectionReason = rejectionReason,
     photoUrl = photoUrl
 )
