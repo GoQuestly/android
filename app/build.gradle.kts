@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "com.goquesty"
+    namespace = "com.goquestly"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.goquesty"
+        applicationId = "com.goquestly"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -109,11 +109,18 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.play.services.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services)
+    implementation(libs.google.id.credential)
     debugImplementation(libs.chucker.debug)
     releaseImplementation(libs.chucker.release)
     implementation(libs.androidx.splashscreen)
     implementation(libs.coil.compose)
+    implementation(libs.socket.io)
+    implementation(libs.google.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
 }
 
 configurations.all {
