@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LeaveSessionDto(
-    val sessionId: String
+    val sessionId: Int
 )

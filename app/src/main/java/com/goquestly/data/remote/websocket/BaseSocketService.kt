@@ -18,7 +18,7 @@ abstract class BaseSocketService(
     private val tokenManager: TokenManager,
     protected val json: Json,
     private val endpoint: String,
-    private val logTag: String
+    protected val logTag: String
 ) {
     protected var socket: Socket? = null
     private val errorCallbacks = mutableListOf<(SocketErrorDto) -> Unit>()
@@ -106,21 +106,24 @@ abstract class BaseSocketService(
             Log.w(logTag, "Cannot emit '$event': not connected")
             return
         }
+        Log.d(logTag, "Emitting event '$event' with payload: $payload")
         socket?.emit(event, payload)
     }
 
-    fun isConnected(): Boolean = socket?.connected() == true
-
-    fun observeErrors(): Flow<SocketErrorDto> = callbackFlow {
-        val callback: (SocketErrorDto) -> Unit = { error ->
-            trySend(error)
+    protected inline fun <reified T : Any> emitDto(event: String, data: T) {
+        if (socket?.connected() != true) {
+            Log.w(logTag, "Cannot emit '$event': not connected")
+            return
         }
-        errorCallbacks.add(callback)
-        awaitClose { errorCallbacks.remove(callback) }
+        val jsonString = json.encodeToString(kotlinx.serialization.serializer<T>(), data)
+        val payload = JSONObject(jsonString)
+        Log.d(logTag, "Emitting event '$event' with payload: $payload")
+        socket?.emit(event, payload)
     }
 
     protected fun observeCustomError(eventName: String): Flow<String> = callbackFlow {
         val callback: (String) -> Unit = { errorMessage ->
+            Log.d(logTag, "Received error for event '$eventName': $errorMessage")
             trySend(errorMessage)
         }
         customErrorCallbacks.getOrPut(eventName) { mutableListOf() }.add(callback)

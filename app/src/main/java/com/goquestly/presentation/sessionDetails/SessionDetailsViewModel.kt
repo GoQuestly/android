@@ -6,8 +6,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goquestly.R
+import com.goquestly.data.local.ActiveSessionManager
 import com.goquestly.data.remote.websocket.ParticipantSocketService
 import com.goquestly.domain.model.ParticipantEvent
+import com.goquestly.domain.model.ParticipationStatus
 import com.goquestly.domain.model.SessionStatus
 import com.goquestly.domain.repository.SessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -35,11 +38,14 @@ class SessionDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val sessionRepository: SessionRepository,
     private val participantSocketService: ParticipantSocketService,
+    private val activeSessionManager: ActiveSessionManager,
+    private val userRepository: com.goquestly.domain.repository.UserRepository,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val sessionId: Int = checkNotNull(savedStateHandle["sessionId"])
     private var sessionMonitoringJob: Job? = null
+    private var currentUserId: Int? = null
 
     private val _state = MutableStateFlow(SessionDetailsState())
     val state = _state.asStateFlow()
@@ -50,22 +56,40 @@ class SessionDetailsViewModel @Inject constructor(
     }
 
     init {
-        loadSessionDetails()
+        loadCurrentUser()
         connectToWebSocket()
         startSessionTimeMonitoring()
+        startSessionCompletionMonitoring()
     }
 
-    private fun loadSessionDetails() {
+    private fun loadCurrentUser() {
+        viewModelScope.launch {
+            userRepository.getProfile().onSuccess { user ->
+                currentUserId = user.id
+            }
+        }
+    }
+
+    fun loadSessionDetails() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
             sessionRepository.getSessionDetails(sessionId)
                 .onSuccess { session ->
+                    val currentUserParticipant = currentUserId?.let { userId ->
+                        session.participants.find { it.userId == userId }
+                    }
+
+                    val isRejected =
+                        currentUserParticipant?.status == ParticipationStatus.REJECTED &&
+                                session.endDate == null
+
                     _state.update {
                         it.copy(
                             session = session,
                             participants = session.participants,
-                            isLoading = false
+                            isLoading = false,
+                            isCurrentUserRejected = isRejected,
                         )
                     }
                 }
@@ -125,8 +149,9 @@ class SessionDetailsViewModel @Inject constructor(
                     userId = event.userId,
                     userName = event.userName,
                     joinedAt = event.joinedAt,
-                    status = com.goquestly.domain.model.ParticipationStatus.APPROVED,
-                    rejectionReason = null
+                    status = ParticipationStatus.APPROVED,
+                    rejectionReason = null,
+                    photoUrl = null
                 )
                 currentState.copy(
                     participants = currentState.participants + newParticipant,
@@ -197,6 +222,36 @@ class SessionDetailsViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun startSessionCompletionMonitoring() {
+        viewModelScope.launch {
+            @Suppress("UnusedFlow")
+            _state.map { it.session }
+                .distinctUntilChanged()
+                .flatMapLatest { session ->
+                    if (session == null || session.status != SessionStatus.IN_PROGRESS) {
+                        return@flatMapLatest emptyFlow()
+                    }
+
+                    val now = Clock.System.now()
+                    val sessionEndTime = session.startDate + session.questMaxDurationMinutes.minutes
+                    val timeUntilCompletion = sessionEndTime - now
+
+                    if (timeUntilCompletion.inWholeMilliseconds > 0) {
+                        flow {
+                            delay(timeUntilCompletion.inWholeMilliseconds)
+                            emit(session)
+                        }
+                    } else {
+                        flowOf(session)
+                    }
+                }
+                .collect { session ->
+                    loadSessionDetails()
+                }
+        }
+    }
+
     fun leaveSession(onSuccess: () -> Unit) {
         viewModelScope.launch {
             _state.update {
@@ -219,6 +274,13 @@ class SessionDetailsViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+    }
+
+    fun joinSession(onNavigateToActiveSession: (Int) -> Unit) {
+        viewModelScope.launch {
+            activeSessionManager.setActiveSession(sessionId)
+            onNavigateToActiveSession(sessionId)
         }
     }
 

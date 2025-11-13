@@ -75,7 +75,7 @@ fun SessionCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             val dateText = if (session.endDate != null) {
-                "${stringResource(R.string.completed_format)} ${formatDateTime(session.endDate)}"
+                "${stringResource(R.string.completed_at)} ${formatDateTime(session.endDate)}"
             } else {
                 "${stringResource(R.string.starts_at)} ${formatDateTime(session.startDate)}"
             }

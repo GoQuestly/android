@@ -63,7 +63,10 @@ fun ConfirmationBottomSheet(
 
             AppButton(
                 text = confirmText,
-                onClick = onConfirm,
+                onClick = {
+                    onDismiss()
+                    onConfirm()
+                },
                 backgroundColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier

@@ -58,7 +58,7 @@
     <string name="in_progress">В Процесі</string>
     <string name="scheduled">Заплановано</string>
     <string name="completed">Завершено</string>
-    <string name="completed_format">Завершено: %s</string>
+    <string name="completed_at">Завершено:</string>
     <string name="error_failed_to_load_sessions">Не вдалося завантажити сесії</string>
     <string name="quest_session">Сесія Квесту</string>
     <string name="back">Назад</string>
@@ -83,4 +83,24 @@
     <string name="error_invalid_invite_link">Неправильне посилання для запрошення</string>
     <string name="error_already_joined_session">Ви вже приєдналися до цієї сесії.</string>
     <string name="open_home">На головну</string>
+    <string name="checkpoints">Точки</string>
+    <string name="current_checkpoint">Поточна точка</string>
+    <string name="locked_until_previous_task_completed">Заблоковано, доки не виконано попереднє завдання</string>
+    <string name="open_task">Відкрити завдання</string>
+    <string name="percent_completed">%d%% виконано</string>
+    <string name="checkpoints_progress">%d з %d точок</string>
+    <string name="my_location">Моє місцезнаходження</string>
+    <string name="location_permission_required">Необхідний дозвіл на геолокацію</string>
+    <string name="location_permission_required_message">Цей квест потребує доступу до вашого місцезнаходження. Будь ласка, надайте дозвіл на геолокацію, щоб продовжити.</string>
+    <string name="grant_permission">Надати дозвіл</string>
+    <string name="active_session_notification_title">Активна сесія квесту</string>
+    <string name="active_session_notification_message">Ваше місцезнаходження відстежується</string>
+    <string name="active_session_notification_channel_name">Відстеження активної сесії</string>
+    <string name="active_session_notification_channel_description">Показується, коли ви активно берете участь у сесії квесту</string>
+    <string name="leave_active_session">Покинути сесію</string>
+    <string name="leave_active_session_confirmation_title">Покинути активну сесію?</string>
+    <string name="leave_active_session_confirmation_message">Ви можете приєднатися до цієї сесії пізніше з деталей сесії.</string>
+    <string name="participant_rejected_title">Участь відхилено</string>
+    <string name="participant_rejected_message">Вас було видалено з цієї сесії, оскільки ви знаходитесь надто далеко від початкової точки.</string>
+    <string name="participant_rejected_details_message">Ви не можете приєднатися до цієї сесії, оскільки вашу участь було відхилено: ви знаходитесь надто далеко від початкової точки.</string>
 </resources>

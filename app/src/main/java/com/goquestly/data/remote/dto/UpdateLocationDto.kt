@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UpdateLocationDto(
-    val sessionId: String,
+    val sessionId: Int,
     val latitude: Double,
     val longitude: Double
 )

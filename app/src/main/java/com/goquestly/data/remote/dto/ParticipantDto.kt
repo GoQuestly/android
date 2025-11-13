@@ -14,5 +14,6 @@ data class ParticipantDto(
     @Serializable(with = InstantIsoSerializer::class)
     val joinedAt: Instant,
     val participationStatus: String,
-    val rejectionReason: String?
+    val rejectionReason: String?,
+    val photoUrl: String?
 )

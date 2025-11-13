@@ -4,6 +4,8 @@ import android.util.Log
 import com.goquestly.data.local.TokenManager
 import com.goquestly.data.remote.dto.ParticipantJoinedDto
 import com.goquestly.data.remote.dto.ParticipantLeftDto
+import com.goquestly.data.remote.dto.SubscribeToSessionDto
+import com.goquestly.data.remote.dto.UnsubscribeFromSessionDto
 import com.goquestly.domain.mapper.toDomain
 import com.goquestly.domain.model.ParticipantEvent
 import com.goquestly.util.API_BASE_URL
@@ -13,7 +15,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
-import org.json.JSONObject
 
 @Singleton
 class ParticipantSocketService @Inject constructor(
@@ -39,17 +40,11 @@ class ParticipantSocketService @Inject constructor(
     }
 
     fun subscribeToSession(sessionId: Int) {
-        val payload = JSONObject().apply {
-            put("sessionId", sessionId)
-        }
-        emit("subscribe-to-session", payload)
+        emitDto("subscribe-to-session", SubscribeToSessionDto(sessionId))
     }
 
     fun unsubscribeFromSession(sessionId: Int) {
-        val payload = JSONObject().apply {
-            put("sessionId", sessionId)
-        }
-        emit("unsubscribe-from-session", payload)
+        emitDto("unsubscribe-from-session", UnsubscribeFromSessionDto(sessionId))
     }
 
     fun observeParticipantJoined(): Flow<ParticipantEvent.Joined> = callbackFlow {

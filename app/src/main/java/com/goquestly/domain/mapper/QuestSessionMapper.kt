@@ -4,7 +4,6 @@ import com.goquestly.data.remote.dto.QuestSessionDto
 import com.goquestly.data.remote.dto.QuestSessionSummaryDto
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.QuestSessionSummary
-import com.goquestly.util.API_BASE_URL
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -22,9 +21,12 @@ fun QuestSessionDto.toDomainModel(): QuestSession {
         participantCount = participantCount,
         questPointCount = questPointCount ?: 0,
         passedQuestPointCount = passedQuestPointCount ?: 0,
-        questPhotoUrl = API_BASE_URL.removeSuffix("/").let { baseUrl ->
-            questPhotoUrl?.removePrefix(baseUrl)?.let { baseUrl + it }
-        },
+        questPhotoUrl = questPhotoUrl
+            ?.removePrefix("http")
+            ?.removePrefix("https")
+            ?.let {
+                "https$it"
+            },
         questDescription = questDescription,
         questMaxDurationMinutes = questMaxDurationMinutes,
         startPointName = startPointName

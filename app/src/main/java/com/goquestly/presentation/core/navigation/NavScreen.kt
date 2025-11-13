@@ -14,6 +14,9 @@ sealed class NavScreen(val route: String) {
     data object InviteHandler : NavScreen("invite/{inviteToken}") {
         fun createRoute(inviteToken: String) = "invite/$inviteToken"
     }
+    data object ActiveSession : NavScreen("active_session/{sessionId}") {
+        fun createRoute(sessionId: Int) = "active_session/$sessionId"
+    }
 
     companion object {
         private val screensWithBottomNav by lazy {

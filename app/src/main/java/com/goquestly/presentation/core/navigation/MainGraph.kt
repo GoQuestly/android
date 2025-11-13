@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
+import com.goquestly.presentation.activeSession.ActiveSessionScreen
 import com.goquestly.presentation.home.HomeScreen
 import com.goquestly.presentation.invite.InviteHandlerScreen
 import com.goquestly.presentation.profile.ProfileScreen
@@ -19,12 +20,13 @@ fun NavGraphBuilder.mainGraph(
     startWithVerification: Boolean,
     onLogout: () -> Unit
 ) {
+    val startDestination = when {
+        startWithVerification -> NavScreen.VerifyEmail.route
+        else -> NavScreen.Home.route
+    }
+
     navigation(
-        startDestination = if (startWithVerification) {
-            NavScreen.VerifyEmail.route
-        } else {
-            NavScreen.Home.route
-        },
+        startDestination = startDestination,
         route = NavGraph.MAIN_GRAPH.route
     ) {
         composable(NavScreen.VerifyEmail.route) {
@@ -63,6 +65,9 @@ fun NavGraphBuilder.mainGraph(
             )
         ) {
             SessionDetailsScreen(
+                onJoinSession = {
+                    navController.navigate(NavScreen.ActiveSession.createRoute(it))
+                },
                 onNavigateBack = {
                     navController.popBackStack()
                 }
@@ -94,6 +99,19 @@ fun NavGraphBuilder.mainGraph(
                             inclusive = true
                         }
                     }
+                }
+            )
+        }
+
+        composable(
+            route = NavScreen.ActiveSession.route,
+            arguments = listOf(
+                navArgument("sessionId") { type = NavType.IntType }
+            )
+        ) {
+            ActiveSessionScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

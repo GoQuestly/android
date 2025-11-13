@@ -9,5 +9,6 @@ data class SessionDetailsState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isParticipantsSheetOpen: Boolean = false,
-    val isLeaveConfirmationSheetOpen: Boolean = false
+    val isLeaveConfirmationSheetOpen: Boolean = false,
+    val isCurrentUserRejected: Boolean = false
 )

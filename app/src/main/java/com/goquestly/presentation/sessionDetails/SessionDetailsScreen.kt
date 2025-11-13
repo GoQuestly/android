@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +38,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -69,16 +72,21 @@ import kotlin.time.Instant
 @Composable
 fun SessionDetailsScreen(
     viewModel: SessionDetailsViewModel = hiltViewModel(),
+    onJoinSession: (sessionId: Int) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadSessionDetails()
+    }
 
     SessionDetailsContent(
         state = state,
         onNavigateBack = { onNavigateBack() },
         onViewAllParticipants = viewModel::toggleParticipantsSheet,
         onDismissParticipantsSheet = viewModel::toggleParticipantsSheet,
-        onStartSession = { },
+        onJoinSession = { viewModel.joinSession(onJoinSession) },
         onShowLeaveConfirmation = viewModel::showLeaveConfirmation,
         onDismissLeaveConfirmation = viewModel::dismissLeaveConfirmation,
         onConfirmLeave = { viewModel.leaveSession { onNavigateBack() } }
@@ -92,7 +100,7 @@ private fun SessionDetailsContent(
     onNavigateBack: () -> Unit,
     onViewAllParticipants: () -> Unit,
     onDismissParticipantsSheet: () -> Unit,
-    onStartSession: () -> Unit,
+    onJoinSession: (sessionId: Int) -> Unit,
     onShowLeaveConfirmation: () -> Unit,
     onDismissLeaveConfirmation: () -> Unit,
     onConfirmLeave: () -> Unit
@@ -176,8 +184,9 @@ private fun SessionDetailsContent(
                 SessionDetails(
                     session = state.session,
                     participants = state.participants,
+                    isCurrentUserRejected = state.isCurrentUserRejected,
                     onViewAllParticipants = onViewAllParticipants,
-                    onStartSession = onStartSession,
+                    onJoinSession = onJoinSession,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -212,8 +221,9 @@ private fun SessionDetailsContent(
 private fun SessionDetails(
     session: QuestSession,
     participants: List<Participant>,
+    isCurrentUserRejected: Boolean,
     onViewAllParticipants: () -> Unit,
-    onStartSession: () -> Unit,
+    onJoinSession: (sessionId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -237,7 +247,7 @@ private fun SessionDetails(
                     model = session.questPhotoUrl,
                     contentDescription = session.questTitle,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize()
                 )
 
                 SessionStatusBadge(
@@ -340,14 +350,35 @@ private fun SessionDetails(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        if (isCurrentUserRejected) {
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.participant_rejected_details_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         PrimaryButton(
-            text = if (session.isActive) {
+            text = if (isCurrentUserRejected) {
+                stringResource(R.string.participant_rejected_title)
+            } else if (session.isActive) {
                 stringResource(R.string.join_session)
             } else {
                 stringResource(R.string.session_not_active)
             },
-            onClick = onStartSession,
-            enabled = session.isActive,
+            onClick = { onJoinSession(session.id) },
+            enabled = session.isActive && !isCurrentUserRejected,
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .height(56.dp),
@@ -426,7 +457,7 @@ private fun ParticipantsPreview(
             val visibleParticipantCount = 5
             Row(horizontalArrangement = Arrangement.spacedBy((-15).dp)) {
                 participants.take(visibleParticipantCount).forEach { participant ->
-                    ParticipantAvatar(participant.userName)
+                    ParticipantAvatar(participant.userName, participant.photoUrl)
                 }
 
                 if (participants.size > visibleParticipantCount) {
@@ -459,7 +490,7 @@ private fun ParticipantsPreview(
 }
 
 @Composable
-private fun ParticipantAvatar(name: String) {
+private fun ParticipantAvatar(name: String, photoUrl: String?) {
     Box(
         modifier = Modifier
             .size(40.dp)
@@ -467,12 +498,21 @@ private fun ParticipantAvatar(name: String) {
             .background(MaterialTheme.colorScheme.secondaryContainer),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = name.take(1).uppercase(),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSecondaryContainer
-        )
+        if (photoUrl != null) {
+            AsyncImage(
+                model = photoUrl,
+                contentDescription = name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Text(
+                text = name.take(1).uppercase(),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+        }
     }
 }
 
@@ -506,7 +546,7 @@ private fun ParticipantItem(participant: Participant) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        ParticipantAvatar(participant.userName)
+        ParticipantAvatar(participant.userName, participant.photoUrl)
 
         Spacer(modifier = Modifier.width(16.dp))
 
@@ -569,7 +609,8 @@ private fun SessionDetailsScreenPreview() {
                         userName = "Alice",
                         joinedAt = Instant.parse("2024-06-01T09:50:00Z"),
                         status = ParticipationStatus.APPROVED,
-                        rejectionReason = null
+                        rejectionReason = null,
+                        photoUrl = null
                     ),
                     Participant(
                         id = 2,
@@ -577,7 +618,8 @@ private fun SessionDetailsScreenPreview() {
                         userName = "Bob",
                         joinedAt = Instant.parse("2024-06-01T09:55:00Z"),
                         status = ParticipationStatus.APPROVED,
-                        rejectionReason = null
+                        rejectionReason = null,
+                        photoUrl = null
                     )
                 ),
                 isParticipantsSheetOpen = false
@@ -585,7 +627,7 @@ private fun SessionDetailsScreenPreview() {
             onNavigateBack = {},
             onViewAllParticipants = {},
             onDismissParticipantsSheet = {},
-            onStartSession = {},
+            onJoinSession = {},
             onShowLeaveConfirmation = {},
             onDismissLeaveConfirmation = {},
             onConfirmLeave = {}

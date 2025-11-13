@@ -19,6 +19,7 @@ import com.goquestly.presentation.core.navigation.mainGraph
 fun AppNavHost(
     navController: NavHostController,
     authState: AuthState,
+    activeSessionId: Int?,
     initialIntent: Intent?,
     onAuthStateChanged: () -> Unit,
     onLogout: () -> Unit
@@ -49,7 +50,7 @@ fun AppNavHost(
         }
 
         if (isCurrentIntentDeeplink) {
-            val inviteToken = intentData?.pathSegments?.getOrNull(1)
+            val inviteToken = intentData.pathSegments?.getOrNull(1)
             if (inviteToken != null && authState is AuthState.Authenticated) {
                 val targetRoute = "invite/$inviteToken"
                 if (navController.currentDestination?.route != targetRoute) {
@@ -81,6 +82,19 @@ fun AppNavHost(
                 if (navController.currentDestination?.route != NavGraph.MAIN_GRAPH.route) {
                     navController.navigate(NavGraph.MAIN_GRAPH.route) {
                         popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(activeSessionId, authState) {
+        if (activeSessionId != null && authState is AuthState.Authenticated) {
+            val targetRoute = "active_session/$activeSessionId"
+            if (navController.currentDestination?.route != targetRoute) {
+                navController.navigate(targetRoute) {
+                    popUpTo(NavGraph.MAIN_GRAPH.route) {
+                        inclusive = false
                     }
                 }
             }

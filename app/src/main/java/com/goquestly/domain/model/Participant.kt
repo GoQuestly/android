@@ -10,5 +10,6 @@ data class Participant(
     val userName: String,
     val joinedAt: Instant,
     val status: ParticipationStatus,
-    val rejectionReason: String?
+    val rejectionReason: String?,
+    val photoUrl: String?
 )

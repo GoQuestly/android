@@ -208,7 +208,6 @@ private fun HomeScreenContent(
                         }
                     }
 
-                    // Pagination trigger
                     LazyListPaginator(
                         listState = listState,
                         hasMoreItems = state.pagination.hasMoreItems,

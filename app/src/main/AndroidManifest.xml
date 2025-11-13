@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <application
         android:name=".App"
@@ -17,6 +21,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Goquestly"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC2A78r6RlxzRqHhobVWNIiJ_l2IFFrRS8" />
+
         <activity
             android:name=".presentation.main.MainActivity"
             android:exported="true"
@@ -41,6 +50,12 @@
                     android:pathPrefix="/invite" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".data.service.LocationTrackingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 
 </manifest>

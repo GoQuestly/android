@@ -117,6 +117,10 @@ dependencies {
     implementation(libs.androidx.splashscreen)
     implementation(libs.coil.compose)
     implementation(libs.socket.io)
+    implementation(libs.google.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
 }
 
 configurations.all {
