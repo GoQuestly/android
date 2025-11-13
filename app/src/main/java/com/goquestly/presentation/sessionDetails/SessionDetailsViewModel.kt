@@ -151,7 +151,7 @@ class SessionDetailsViewModel @Inject constructor(
                     joinedAt = event.joinedAt,
                     status = ParticipationStatus.APPROVED,
                     rejectionReason = null,
-                    photoUrl = null
+                    photoUrl = event.photoUrl
                 )
                 currentState.copy(
                     participants = currentState.participants + newParticipant,

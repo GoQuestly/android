@@ -1,6 +1,7 @@
 package com.goquestly.presentation.activeSession
 
 import android.content.Context
+import android.location.LocationManager
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -215,5 +216,11 @@ class ActiveSessionViewModel @Inject constructor(
             return
         }
         LocationTrackingService.startService(context, sessionId)
+    }
+
+    fun isLocationEnabled(): Boolean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 }
