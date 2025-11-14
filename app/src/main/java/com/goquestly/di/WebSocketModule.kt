@@ -1,8 +1,8 @@
 package com.goquestly.di
 
 import com.goquestly.data.local.TokenManager
-import com.goquestly.data.remote.websocket.LocationSocketService
-import com.goquestly.data.remote.websocket.ParticipantSocketService
+import com.goquestly.data.remote.websocket.ActiveSessionSocketService
+import com.goquestly.data.remote.websocket.SessionEventsSocketService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,15 +16,15 @@ object WebSocketModule {
 
     @Provides
     @Singleton
-    fun provideParticipantSocketService(
+    fun provideSessionEventsSocketService(
         tokenManager: TokenManager,
         json: Json
-    ): ParticipantSocketService = ParticipantSocketService(tokenManager, json)
+    ): SessionEventsSocketService = SessionEventsSocketService(tokenManager, json)
 
     @Provides
     @Singleton
-    fun provideLocationSocketService(
+    fun provideActiveSessionSocketService(
         tokenManager: TokenManager,
         json: Json
-    ): LocationSocketService = LocationSocketService(tokenManager, json)
+    ): ActiveSessionSocketService = ActiveSessionSocketService(tokenManager, json)
 }

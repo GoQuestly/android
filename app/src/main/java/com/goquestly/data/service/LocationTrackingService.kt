@@ -20,7 +20,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.goquestly.R
 import com.goquestly.data.local.ActiveSessionManager
-import com.goquestly.data.remote.websocket.LocationSocketService
+import com.goquestly.data.remote.websocket.ActiveSessionSocketService
 import com.goquestly.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +34,7 @@ import javax.inject.Inject
 class LocationTrackingService : Service() {
 
     @Inject
-    lateinit var locationSocketService: LocationSocketService
+    lateinit var activeSessionSocketService: ActiveSessionSocketService
 
     @Inject
     lateinit var activeSessionManager: ActiveSessionManager
@@ -78,11 +78,11 @@ class LocationTrackingService : Service() {
 
         serviceScope.launch {
             try {
-                locationSocketService.connect()
-                locationSocketService.joinSession(sessionId)
+                activeSessionSocketService.connect()
+                activeSessionSocketService.joinSession(sessionId)
 
                 launch {
-                    locationSocketService.observeParticipantRejected().collect {
+                    activeSessionSocketService.observeParticipantRejected().collect {
                         handleRejection()
                     }
                 }
@@ -127,7 +127,7 @@ class LocationTrackingService : Service() {
                     sessionId?.let {
                         serviceScope.launch {
                             try {
-                                locationSocketService.updateLocation(
+                                activeSessionSocketService.updateLocation(
                                     sessionId = it,
                                     latitude = location.latitude,
                                     longitude = location.longitude
@@ -163,8 +163,8 @@ class LocationTrackingService : Service() {
         sessionId?.let {
             serviceScope.launch {
                 try {
-                    locationSocketService.leaveSession(it)
-                    locationSocketService.disconnect()
+                    activeSessionSocketService.leaveSession(it)
+                    activeSessionSocketService.disconnect()
                 } catch (_: Exception) {
                 }
             }

@@ -11,17 +11,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 
 @Singleton
-class LocationSocketService @Inject constructor(
+class ActiveSessionSocketService @Inject constructor(
     tokenManager: TokenManager,
     json: Json
 ) : BaseSocketService(
     tokenManager = tokenManager,
     json = json,
-    endpoint = "location",
+    endpoint = "active-session",
     logTag = TAG
 ) {
     companion object {
-        private const val TAG = "LocationSocket"
+        private const val TAG = "ActiveSessionSocket"
         private const val ERROR_JOIN_SESSION = "join-session-error"
         private const val ERROR_LEAVE_SESSION = "leave-session-error"
         private const val ERROR_UPDATE_LOCATION = "update-location-error"
