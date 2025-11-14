@@ -1,6 +1,7 @@
 package com.goquestly.presentation.activeSession
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,22 +96,34 @@ import kotlinx.coroutines.launch
 @Composable
 fun ActiveSessionScreen(
     viewModel: ActiveSessionViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    onLeaveSession: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val locationPermission = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    var isLocationEnabled by remember { mutableStateOf(true) }
 
     LaunchedEffect(state.isSessionCompleted) {
         if (state.isSessionCompleted) {
-            onNavigateBack()
+            onLeaveSession()
         }
+    }
+
+    LaunchedEffect(Unit) {
+        isLocationEnabled = viewModel.isLocationEnabled()
     }
 
     if (!locationPermission.status.isGranted) {
         LocationPermissionRequired(
-            onNavigateBack = onNavigateBack,
+            onNavigateBack = onLeaveSession,
             onGrantPermission = {
                 locationPermission.launchPermissionRequest()
+            }
+        )
+    } else if (!isLocationEnabled) {
+        LocationDisabledScreen(
+            onNavigateBack = onLeaveSession,
+            onRetry = {
+                isLocationEnabled = viewModel.isLocationEnabled()
             }
         )
     } else {
@@ -122,7 +135,7 @@ fun ActiveSessionScreen(
             onRetry = viewModel::retry,
             onShowLeaveConfirmation = viewModel::showLeaveConfirmation,
             onDismissLeaveConfirmation = viewModel::dismissLeaveConfirmation,
-            onLeaveSession = { viewModel.leaveSession(onNavigateBack) },
+            onLeaveSession = { viewModel.leaveSession(onLeaveSession) },
             onEnableCameraTracking = viewModel::enableCameraTracking,
             onDisableCameraTracking = viewModel::disableCameraTracking
         )
@@ -207,6 +220,69 @@ private fun LocationPermissionRequired(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+private fun LocationDisabledScreen(
+    onNavigateBack: () -> Unit,
+    onRetry: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            modifier = Modifier.align(Alignment.TopCenter),
+            title = {
+                Text(
+                    text = stringResource(R.string.location_disabled),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBackIos,
+                        contentDescription = stringResource(R.string.back)
+                    )
+                }
+            }
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.MyLocation,
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                tint = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(R.string.location_disabled),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.location_disabled_message),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            PrimaryButton(
+                text = stringResource(R.string.try_again),
+                onClick = onRetry,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 private fun ActiveSessionContent(
     state: ActiveSessionState,
     onRetry: () -> Unit,
@@ -216,6 +292,10 @@ private fun ActiveSessionContent(
     onEnableCameraTracking: () -> Unit,
     onDisableCameraTracking: () -> Unit
 ) {
+    BackHandler(enabled = true) {
+
+    }
+
     val bottomSheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.PartiallyExpanded,
         skipHiddenState = true

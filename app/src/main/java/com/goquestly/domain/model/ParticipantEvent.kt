@@ -15,7 +15,8 @@ sealed class ParticipantEvent {
         override val userId: Int,
         override val userName: String,
         override val sessionId: Int,
-        val joinedAt: Instant
+        val joinedAt: Instant,
+        val photoUrl: String? = null
     ) : ParticipantEvent()
 
     data class Left(

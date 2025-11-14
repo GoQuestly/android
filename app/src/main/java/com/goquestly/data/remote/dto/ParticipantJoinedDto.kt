@@ -8,5 +8,6 @@ data class ParticipantJoinedDto(
     val userId: Int,
     val userName: String,
     val sessionId: Int,
-    val joinedAt: String
+    val joinedAt: String,
+    val photoUrl: String? = null
 )
