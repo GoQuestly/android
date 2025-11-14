@@ -93,6 +93,8 @@
     <string name="location_permission_required">Необхідний дозвіл на геолокацію</string>
     <string name="location_permission_required_message">Цей квест потребує доступу до вашого місцезнаходження. Будь ласка, надайте дозвіл на геолокацію, щоб продовжити.</string>
     <string name="grant_permission">Надати дозвіл</string>
+    <string name="location_disabled">Геолокація вимкнена</string>
+    <string name="location_disabled_message">Будь ласка, увімкніть геолокацію в налаштуваннях пристрою, щоб приєднатися до сесії квесту.</string>
     <string name="active_session_notification_title">Активна сесія квесту</string>
     <string name="active_session_notification_message">Ваше місцезнаходження відстежується</string>
     <string name="active_session_notification_channel_name">Відстеження активної сесії</string>

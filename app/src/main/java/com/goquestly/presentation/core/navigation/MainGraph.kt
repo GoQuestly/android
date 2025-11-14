@@ -108,10 +108,15 @@ fun NavGraphBuilder.mainGraph(
             arguments = listOf(
                 navArgument("sessionId") { type = NavType.IntType }
             )
-        ) {
+        ) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.getInt("sessionId") ?: 0
             ActiveSessionScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
+                onLeaveSession = {
+                    navController.navigate(NavScreen.SessionDetails.createRoute(sessionId)) {
+                        popUpTo(NavScreen.Home.route) {
+                            inclusive = false
+                        }
+                    }
                 }
             )
         }

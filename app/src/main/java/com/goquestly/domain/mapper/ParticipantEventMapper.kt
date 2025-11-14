@@ -13,7 +13,8 @@ fun ParticipantJoinedDto.toDomain(): ParticipantEvent.Joined {
         userId = userId,
         userName = userName,
         sessionId = sessionId,
-        joinedAt = Instant.parse(joinedAt)
+        joinedAt = Instant.parse(joinedAt),
+        photoUrl = photoUrl
     )
 }
 
