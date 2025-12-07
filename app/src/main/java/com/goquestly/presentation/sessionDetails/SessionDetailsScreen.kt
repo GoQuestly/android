@@ -57,6 +57,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.goquestly.R
 import com.goquestly.domain.model.Participant
+import com.goquestly.domain.model.ParticipationBlockReason
 import com.goquestly.domain.model.ParticipationStatus
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.SessionStatus
@@ -184,7 +185,8 @@ private fun SessionDetailsContent(
                 SessionDetails(
                     session = state.session,
                     participants = state.participants,
-                    isCurrentUserRejected = state.isCurrentUserRejected,
+                    currentUserParticipationStatus = state.currentUserParticipationStatus,
+                    currentUserBlockReason = state.currentUserBlockReason,
                     onViewAllParticipants = onViewAllParticipants,
                     onJoinSession = onJoinSession,
                     modifier = Modifier.padding(paddingValues)
@@ -221,7 +223,8 @@ private fun SessionDetailsContent(
 private fun SessionDetails(
     session: QuestSession,
     participants: List<Participant>,
-    isCurrentUserRejected: Boolean,
+    currentUserParticipationStatus: ParticipationStatus?,
+    currentUserBlockReason: String?,
     onViewAllParticipants: () -> Unit,
     onJoinSession: (sessionId: Int) -> Unit,
     modifier: Modifier = Modifier
@@ -350,7 +353,12 @@ private fun SessionDetails(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (isCurrentUserRejected) {
+        val isBlockedFromParticipation = currentUserParticipationStatus != null
+        val blockReason = currentUserBlockReason?.let {
+            ParticipationBlockReason.entries.find { reason -> reason.value == it }
+        }
+
+        if (isBlockedFromParticipation) {
             Card(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
@@ -360,7 +368,16 @@ private fun SessionDetails(
                 )
             ) {
                 Text(
-                    text = stringResource(R.string.participant_rejected_details_message),
+                    text = when (blockReason) {
+                        ParticipationBlockReason.NO_LOCATION -> stringResource(R.string.rejection_reason_no_location)
+                        ParticipationBlockReason.TOO_FAR_FROM_START -> stringResource(R.string.rejection_reason_too_far_from_start)
+                        ParticipationBlockReason.REQUIRED_TASK_NOT_COMPLETED -> stringResource(R.string.rejection_reason_required_task_not_completed)
+                        null -> when (currentUserParticipationStatus) {
+                            ParticipationStatus.REJECTED -> stringResource(R.string.participant_rejected_details_message)
+                            ParticipationStatus.DISQUALIFIED -> stringResource(R.string.participant_disqualified_details_message)
+                            else -> ""
+                        }
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onErrorContainer,
                     modifier = Modifier.padding(16.dp)
@@ -370,15 +387,19 @@ private fun SessionDetails(
         }
 
         PrimaryButton(
-            text = if (isCurrentUserRejected) {
-                stringResource(R.string.participant_rejected_title)
-            } else if (session.isActive) {
-                stringResource(R.string.join_session)
-            } else {
-                stringResource(R.string.session_not_active)
+            text = when {
+                blockReason != null -> stringResource(R.string.participant_rejected_title)
+                currentUserParticipationStatus == ParticipationStatus.REJECTED ->
+                    stringResource(R.string.participant_rejected_title)
+
+                currentUserParticipationStatus == ParticipationStatus.DISQUALIFIED ->
+                    stringResource(R.string.participant_disqualified_title)
+
+                session.isActive -> stringResource(R.string.join_session)
+                else -> stringResource(R.string.session_not_active)
             },
             onClick = { onJoinSession(session.id) },
-            enabled = session.isActive && !isCurrentUserRejected,
+            enabled = session.isActive && !isBlockedFromParticipation,
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .height(56.dp),
