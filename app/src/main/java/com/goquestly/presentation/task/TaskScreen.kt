@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -292,13 +293,13 @@ private fun CodeWordTaskContent(
     onCodeWordChange: (String) -> Unit,
     onSubmit: () -> Unit
 ) {
+    if (state.isSubmitting) {
+        FullScreenLoader(modifier = Modifier.fillMaxWidth())
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        if (state.isSubmitting) {
-            FullScreenLoader(modifier = Modifier.fillMaxWidth())
-        }
-
         if (!state.isTaskStarted) {
             CircularProgressIndicator(
                 modifier = Modifier
@@ -541,7 +542,10 @@ private fun PhotoTaskContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp)
-                        .clip(RoundedCornerShape(16.dp)),
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        },
                     contentScale = ContentScale.Crop
                 )
 
@@ -557,6 +561,9 @@ private fun PhotoTaskContent(
                         .fillMaxWidth()
                         .height(200.dp)
                         .clip(RoundedCornerShape(16.dp))
+                        .clickable {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
                         .border(
                             2.dp,
                             MaterialTheme.colorScheme.outline,

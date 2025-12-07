@@ -2,6 +2,7 @@ package com.goquestly.presentation.activeSession
 
 import com.google.android.gms.maps.model.LatLng
 import com.goquestly.domain.model.ParticipationBlockReason
+import com.goquestly.domain.model.PhotoModeratedEvent
 import com.goquestly.domain.model.QuestPoint
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.TaskStartData
@@ -21,7 +22,8 @@ data class ActiveSessionState(
     val blockReason: ParticipationBlockReason? = null,
     val isCameraTrackingEnabled: Boolean = true,
     val pointPassedEvent: PointPassedEvent? = null,
-    val activeTask: TaskStartData? = null
+    val activeTask: TaskStartData? = null,
+    val photoModeratedEvent: PhotoModeratedEvent? = null
 )
 
 data class PointPassedEvent(

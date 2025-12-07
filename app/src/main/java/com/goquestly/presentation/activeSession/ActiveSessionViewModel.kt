@@ -57,6 +57,7 @@ class ActiveSessionViewModel @Inject constructor(
         observeLocationUpdates()
         observePointPassedEvents()
         observeSessionCancelled()
+        observePhotoModerated()
     }
 
     private fun observeParticipationBlockEvents() {
@@ -88,6 +89,23 @@ class ActiveSessionViewModel @Inject constructor(
         viewModelScope.launch {
             activeSessionManager.sessionCancelledEvents.collect {
                 handleSessionCompletion()
+            }
+        }
+    }
+
+    private fun observePhotoModerated() {
+        viewModelScope.launch {
+            activeSessionManager.photoModeratedEvents.collect { event ->
+                _state.update { it.copy(photoModeratedEvent = event) }
+                refreshQuestPoints()
+            }
+        }
+    }
+
+    private fun refreshQuestPoints() {
+        viewModelScope.launch {
+            sessionRepository.getQuestPoints(sessionId).onSuccess { points ->
+                _state.update { it.copy(questPoints = points) }
             }
         }
     }
@@ -136,6 +154,10 @@ class ActiveSessionViewModel @Inject constructor(
                 notificationManager.cancel(notificationId)
             }
         }
+    }
+
+    fun dismissPhotoModeratedDialog() {
+        _state.update { it.copy(photoModeratedEvent = null) }
     }
 
     private fun loadSession() {

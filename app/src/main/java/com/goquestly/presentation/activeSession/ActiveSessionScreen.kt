@@ -205,6 +205,13 @@ fun ActiveSessionScreen(
             onDismiss = { viewModel.dismissPointPassedDialog() }
         )
     }
+
+    state.photoModeratedEvent?.let { event ->
+        PhotoModeratedDialog(
+            event = event,
+            onDismiss = { viewModel.dismissPhotoModeratedDialog() }
+        )
+    }
 }
 
 @Composable
@@ -263,6 +270,81 @@ private fun PointPassedDialog(
             androidx.compose.material3.TextButton(onClick = onDismiss) {
                 Text(stringResource(if (shouldShowTaskButton) R.string.continue_quest else R.string.ok))
             }
+        }
+    )
+}
+
+@Composable
+private fun PhotoModeratedDialog(
+    event: com.goquestly.domain.model.PhotoModeratedEvent,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = if (event.approved) Icons.Default.CheckCircle else Icons.Default.Close,
+                contentDescription = null,
+                tint = if (event.approved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(48.dp)
+            )
+        },
+        title = {
+            Text(
+                text = stringResource(
+                    if (event.approved) R.string.photo_approved else R.string.photo_rejected
+                ),
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = event.pointName,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = event.taskDescription,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                if (!event.approved && event.rejectionReason != null) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.rejection_reason_label),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = event.rejectionReason,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                if (event.scoreAdjustment != 0) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.points_earned, event.scoreAdjustment),
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            PrimaryButton(
+                text = stringResource(R.string.ok),
+                onClick = onDismiss
+            )
         }
     )
 }

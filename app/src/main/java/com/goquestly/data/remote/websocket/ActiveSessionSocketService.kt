@@ -4,6 +4,7 @@ import android.util.Log
 import com.goquestly.data.local.TokenManager
 import com.goquestly.data.remote.dto.JoinSessionDto
 import com.goquestly.data.remote.dto.LeaveSessionDto
+import com.goquestly.data.remote.dto.PhotoModeratedEventDto
 import com.goquestly.data.remote.dto.PointPassedEventDto
 import com.goquestly.data.remote.dto.UpdateLocationDto
 import com.goquestly.util.API_BASE_URL
@@ -33,10 +34,12 @@ class ActiveSessionSocketService @Inject constructor(
         private const val PARTICIPANT_DISQUALIFIED = "participant-disqualified"
         private const val POINT_PASSED = "point-passed"
         private const val SESSION_CANCELLED = "session-cancelled"
+        private const val PHOTO_MODERATED = "photo-moderated"
     }
 
     private val pointPassedCallbacks = mutableListOf<(PointPassedEventDto) -> Unit>()
     private val sessionCancelledCallbacks = mutableListOf<() -> Unit>()
+    private val photoModeratedCallbacks = mutableListOf<(PhotoModeratedEventDto) -> Unit>()
 
     suspend fun connect() {
         connect(API_BASE_URL)
@@ -78,6 +81,16 @@ class ActiveSessionSocketService @Inject constructor(
         }
     }
 
+    fun observePhotoModerated(): Flow<PhotoModeratedEventDto> = callbackFlow {
+        val callback: (PhotoModeratedEventDto) -> Unit = { event ->
+            trySend(event)
+        }
+        photoModeratedCallbacks.add(callback)
+        awaitClose {
+            photoModeratedCallbacks.remove(callback)
+        }
+    }
+
     override fun getErrorEventNames(): List<String> = listOf(
         ERROR_JOIN_SESSION,
         ERROR_LEAVE_SESSION,
@@ -102,10 +115,23 @@ class ActiveSessionSocketService @Inject constructor(
         socket?.on(SESSION_CANCELLED) {
             sessionCancelledCallbacks.forEach { it() }
         }
+
+        socket?.on(PHOTO_MODERATED) { args ->
+            args.firstOrNull()?.let { data ->
+                try {
+                    val event =
+                        jsonSerializer.decodeFromString<PhotoModeratedEventDto>(data.toString())
+                    photoModeratedCallbacks.forEach { it(event) }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to parse photo-moderated event", e)
+                }
+            }
+        }
     }
 
     override fun clearCallbacks() {
         pointPassedCallbacks.clear()
         sessionCancelledCallbacks.clear()
+        photoModeratedCallbacks.clear()
     }
 }

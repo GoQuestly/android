@@ -164,4 +164,9 @@
     <string name="cancelled">Скасована</string>
     <string name="unit_meters">м</string>
     <string name="unit_kilometers">км</string>
+    <string name="photo_moderation_result">Результат модерації фото</string>
+    <string name="photo_approved">Фото схвалено!</string>
+    <string name="photo_rejected">Фото відхилено</string>
+    <string name="points_earned">Отримано балів: %1$d</string>
+    <string name="rejection_reason_label">Причина:</string>
 </resources>

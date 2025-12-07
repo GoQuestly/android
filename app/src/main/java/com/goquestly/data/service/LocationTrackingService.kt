@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.goquestly.R
 import com.goquestly.data.local.ActiveSessionManager
 import com.goquestly.data.remote.websocket.ActiveSessionSocketService
+import com.goquestly.domain.mapper.toDomainModel
 import com.goquestly.domain.model.ParticipationBlockReason
 import com.goquestly.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -113,6 +114,12 @@ class LocationTrackingService : Service() {
                     activeSessionSocketService.observeSessionCancelled().collect {
                         activeSessionManager.emitSessionCancelled()
                         stopTracking()
+                    }
+                }
+
+                launch {
+                    activeSessionSocketService.observePhotoModerated().collect { event ->
+                        activeSessionManager.emitPhotoModerated(event.toDomainModel())
                     }
                 }
             } catch (_: Exception) {

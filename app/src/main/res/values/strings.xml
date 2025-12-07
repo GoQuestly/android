@@ -163,4 +163,9 @@
     <string name="cancelled">Cancelled</string>
     <string name="unit_meters">m</string>
     <string name="unit_kilometers">km</string>
+    <string name="photo_moderation_result">Photo Moderation Result</string>
+    <string name="photo_approved">Photo Approved!</string>
+    <string name="photo_rejected">Photo Rejected</string>
+    <string name="points_earned">Points earned: %1$d</string>
+    <string name="rejection_reason_label">Reason:</string>
 </resources>
