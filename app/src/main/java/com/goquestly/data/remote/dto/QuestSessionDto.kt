@@ -15,7 +15,7 @@ data class QuestSessionDto(
     val startDate: Instant,
     @Serializable(with = InstantIsoSerializer::class)
     val endDate: Instant?,
-    val endReason: String?,
+    val endReason: String? = null,
     val inviteToken: String,
     val participants: List<ParticipantDto>,
     val isActive: Boolean,

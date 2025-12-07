@@ -10,6 +10,7 @@ data class QuestSessionSummary(
     override val questTitle: String,
     override val startDate: Instant,
     override val endDate: Instant?,
+    override val endReason: SessionEndReason?,
     override val isActive: Boolean,
     override val participantCount: Int,
     override val questPointCount: Int,

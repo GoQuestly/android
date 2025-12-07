@@ -15,6 +15,7 @@ data class QuestSessionSummaryDto(
     val startDate: Instant,
     @Serializable(with = InstantIsoSerializer::class)
     val endDate: Instant?,
+    val endReason: String? = null,
     val isActive: Boolean,
     val participantCount: Int,
     val questPointCount: Int,

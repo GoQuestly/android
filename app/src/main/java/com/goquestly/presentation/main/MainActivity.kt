@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,13 +27,15 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapsSdkInitializedCallback
 import com.goquestly.domain.model.AuthState
 import com.goquestly.presentation.core.components.ErrorScreen
 import com.goquestly.presentation.core.theme.GoquestlyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
 
     private val mainViewModel: MainViewModel by viewModels()
     private var currentIntent by mutableStateOf<Intent?>(null)
@@ -42,6 +45,8 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)
 
         currentIntent = intent
 
@@ -98,6 +103,14 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         currentIntent = intent
         setIntent(intent)
+    }
+
+    override fun onMapsSdkInitialized(renderer: MapsInitializer.Renderer) {
+        Log.d(TAG, "Maps SDK initialized with renderer: $renderer")
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }
 

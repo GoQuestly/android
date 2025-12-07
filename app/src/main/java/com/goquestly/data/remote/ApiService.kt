@@ -2,6 +2,7 @@ package com.goquestly.data.remote
 
 import com.goquestly.data.remote.annotation.RequiresAuth
 import com.goquestly.data.remote.dto.AuthResponseDto
+import com.goquestly.data.remote.dto.CodeWordSubmitDto
 import com.goquestly.data.remote.dto.GoogleSignInRequestDto
 import com.goquestly.data.remote.dto.JoinSessionRequestDto
 import com.goquestly.data.remote.dto.LoginRequestDto
@@ -9,8 +10,14 @@ import com.goquestly.data.remote.dto.PaginatedResponseDto
 import com.goquestly.data.remote.dto.QuestPointDto
 import com.goquestly.data.remote.dto.QuestSessionDto
 import com.goquestly.data.remote.dto.QuestSessionSummaryDto
+import com.goquestly.data.remote.dto.QuestTaskDto
+import com.goquestly.data.remote.dto.QuizAnswerResponseDto
+import com.goquestly.data.remote.dto.QuizAnswerSubmitDto
 import com.goquestly.data.remote.dto.RegisterRequestDto
 import com.goquestly.data.remote.dto.ResetPasswordRequestDto
+import com.goquestly.data.remote.dto.ServerTimeDto
+import com.goquestly.data.remote.dto.TaskStartResponseDto
+import com.goquestly.data.remote.dto.TaskSubmitResponseDto
 import com.goquestly.data.remote.dto.UpdateProfileDto
 import com.goquestly.data.remote.dto.UserDto
 import com.goquestly.data.remote.dto.VerificationStatusResponseDto
@@ -27,6 +34,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
+
+    @GET("/server-time")
+    suspend fun getServerTime(): ServerTimeDto
 
     @POST("/auth/register")
     suspend fun register(@Body request: RegisterRequestDto): AuthResponseDto
@@ -89,4 +99,49 @@ interface ApiService {
     @RequiresAuth
     @GET("/participant/sessions/{id}/points")
     suspend fun getQuestPoints(@Path("id") sessionId: Int): List<QuestPointDto>
+
+    @RequiresAuth
+    @GET("/participant/sessions/{sessionId}/points/{pointId}/task")
+    suspend fun getTask(
+        @Path("sessionId") sessionId: Int,
+        @Path("pointId") pointId: Int
+    ): QuestTaskDto
+
+    @RequiresAuth
+    @GET("/participant/sessions/{sessionId}/active-task")
+    suspend fun getActiveTask(
+        @Path("sessionId") sessionId: Int
+    ): TaskStartResponseDto?
+
+    @RequiresAuth
+    @POST("/participant/sessions/{sessionId}/points/{pointId}/task/start")
+    suspend fun startTask(
+        @Path("sessionId") sessionId: Int,
+        @Path("pointId") pointId: Int
+    ): TaskStartResponseDto
+
+    @RequiresAuth
+    @POST("/participant/sessions/{sessionId}/points/{pointId}/task/submit/code-word")
+    suspend fun submitCodeWord(
+        @Path("sessionId") sessionId: Int,
+        @Path("pointId") pointId: Int,
+        @Body request: CodeWordSubmitDto
+    ): TaskSubmitResponseDto
+
+    @RequiresAuth
+    @POST("/participant/sessions/{sessionId}/points/{pointId}/task/submit/quiz/answer")
+    suspend fun submitQuizAnswer(
+        @Path("sessionId") sessionId: Int,
+        @Path("pointId") pointId: Int,
+        @Body request: QuizAnswerSubmitDto
+    ): QuizAnswerResponseDto
+
+    @RequiresAuth
+    @Multipart
+    @POST("/participant/sessions/{sessionId}/points/{pointId}/task/submit/photo")
+    suspend fun submitPhoto(
+        @Path("sessionId") sessionId: Int,
+        @Path("pointId") pointId: Int,
+        @Part file: MultipartBody.Part
+    ): TaskSubmitResponseDto
 }

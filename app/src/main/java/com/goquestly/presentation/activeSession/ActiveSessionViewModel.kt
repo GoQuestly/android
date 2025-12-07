@@ -1,5 +1,6 @@
 package com.goquestly.presentation.activeSession
 
+import android.app.NotificationManager
 import android.content.Context
 import android.location.LocationManager
 import androidx.lifecycle.SavedStateHandle
@@ -8,12 +9,17 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.goquestly.R
 import com.goquestly.data.local.ActiveSessionManager
+import com.goquestly.data.local.ServerTimeManager
 import com.goquestly.data.service.LocationTrackingService
+import com.goquestly.domain.model.ParticipationBlockReason
+import com.goquestly.domain.model.PointPassedEvent
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.repository.SessionRepository
+import com.goquestly.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +27,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -31,6 +36,8 @@ class ActiveSessionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val sessionRepository: SessionRepository,
     private val activeSessionManager: ActiveSessionManager,
+    private val userRepository: UserRepository,
+    private val serverTimeManager: ServerTimeManager,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -39,21 +46,23 @@ class ActiveSessionViewModel @Inject constructor(
     private val _state = MutableStateFlow(ActiveSessionState())
     val state = _state.asStateFlow()
 
-    val rejectionEvents = activeSessionManager.rejectionEvents
+    val participationBlockEvents = activeSessionManager.participationBlockEvents
 
     private var timerJob: Job? = null
     private var sessionMonitorJob: Job? = null
 
     init {
         loadSession()
-        observeRejectionEvents()
+        observeParticipationBlockEvents()
         observeLocationUpdates()
+        observePointPassedEvents()
+        observeSessionCancelled()
     }
 
-    private fun observeRejectionEvents() {
+    private fun observeParticipationBlockEvents() {
         viewModelScope.launch {
-            rejectionEvents.collect {
-                handleRejection()
+            participationBlockEvents.collect { event ->
+                handleParticipationBlock(event.reason)
             }
         }
     }
@@ -67,12 +76,79 @@ class ActiveSessionViewModel @Inject constructor(
         }
     }
 
+    private fun observePointPassedEvents() {
+        viewModelScope.launch {
+            activeSessionManager.pointPassedEvents.collect { event ->
+                handlePointPassed(event)
+            }
+        }
+    }
+
+    private fun observeSessionCancelled() {
+        viewModelScope.launch {
+            activeSessionManager.sessionCancelledEvents.collect {
+                handleSessionCompletion()
+            }
+        }
+    }
+
+    private fun handlePointPassed(event: PointPassedEvent) {
+        val point = _state.value.questPoints.find { it.pointId == event.questPointId }
+        val hasTask = point?.hasTask ?: false
+        val taskStatus = point?.taskStatus
+
+        _state.update {
+            it.copy(
+                pointPassedEvent = PointPassedEvent(
+                    questPointId = event.questPointId,
+                    pointName = event.pointName,
+                    orderNumber = event.orderNumber,
+                    hasTask = hasTask,
+                    taskStatus = taskStatus
+                ),
+                questPoints = it.questPoints.map { point ->
+                    if (point.pointId == event.questPointId) {
+                        point.copy(isPassed = true)
+                    } else {
+                        point
+                    }
+                }
+            )
+        }
+
+        if (!hasTask) {
+            viewModelScope.launch {
+                sessionRepository.getQuestPoints(sessionId).onSuccess { updatedPoints ->
+                    _state.update { it.copy(questPoints = updatedPoints) }
+                }
+            }
+        }
+    }
+
+    fun dismissPointPassedDialog() {
+        _state.update { it.copy(pointPassedEvent = null) }
+
+        val notificationIds = activeSessionManager.getAndClearPointPassedNotifications()
+        if (notificationIds.isNotEmpty()) {
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationIds.forEach { notificationId ->
+                notificationManager.cancel(notificationId)
+            }
+        }
+    }
+
     private fun loadSession() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            val sessionResult = sessionRepository.getSessionDetails(sessionId)
-            val pointsResult = sessionRepository.getQuestPoints(sessionId)
+            val sessionDeferred = async { sessionRepository.getSessionDetails(sessionId) }
+            val pointsDeferred = async { sessionRepository.getQuestPoints(sessionId) }
+            val activeTaskDeferred = async { sessionRepository.getActiveTask(sessionId) }
+
+            val sessionResult = sessionDeferred.await()
+            val pointsResult = pointsDeferred.await()
+            val activeTaskResult = activeTaskDeferred.await()
 
             sessionResult.onSuccess { session ->
                 if (!session.isActive) {
@@ -80,15 +156,28 @@ class ActiveSessionViewModel @Inject constructor(
                     return@launch
                 }
 
+                userRepository.getProfile().getOrNull()?.let { currentUser ->
+                    session.participants.find { it.userId == currentUser.id }?.rejectionReason?.let { reasonString ->
+                        ParticipationBlockReason.entries.find { it.value == reasonString }
+                            ?.let { reason ->
+                                handleParticipationBlock(reason)
+                                return@launch
+                            }
+                    }
+                }
+
                 startTimer(session)
                 startSessionMonitoring(session)
 
                 pointsResult.onSuccess { points ->
+                    val activeTask = activeTaskResult.getOrNull()
+
                     _state.update {
                         it.copy(
                             session = session,
                             questPoints = points,
-                            isLoading = false
+                            isLoading = false,
+                            activeTask = activeTask
                         )
                     }
                 }.onFailure {
@@ -113,12 +202,14 @@ class ActiveSessionViewModel @Inject constructor(
     @OptIn(ExperimentalTime::class)
     private fun startTimer(session: QuestSession) {
         timerJob?.cancel()
-        _state.update {
-            it.copy(
-                elapsedTimeSeconds = Clock.System.now().minus(session.startDate).inWholeSeconds
-            )
-        }
         timerJob = viewModelScope.launch {
+            val now = serverTimeManager.getCurrentServerTime()
+            _state.update {
+                it.copy(
+                    elapsedTimeSeconds = (now - session.startDate).inWholeSeconds
+                )
+            }
+
             while (isActive) {
                 delay(1.seconds)
                 _state.update {
@@ -132,7 +223,7 @@ class ActiveSessionViewModel @Inject constructor(
     private fun startSessionMonitoring(session: QuestSession) {
         sessionMonitorJob?.cancel()
         sessionMonitorJob = viewModelScope.launch {
-            val now = Clock.System.now()
+            val now = serverTimeManager.getCurrentServerTime()
             val sessionEndTime = session.startDate + session.questMaxDurationMinutes.minutes
             val timeUntilCompletion = sessionEndTime - now
 
@@ -195,14 +286,15 @@ class ActiveSessionViewModel @Inject constructor(
         }
     }
 
-    fun handleRejection() {
+    fun handleParticipationBlock(reason: ParticipationBlockReason) {
         viewModelScope.launch {
-            _state.update { it.copy(isUserRejected = true) }
+            activeSessionManager.clearActiveSession()
+            _state.update { it.copy(isParticipationBlocked = true, blockReason = reason) }
         }
     }
 
-    fun dismissRejectionDialog() {
-        _state.update { it.copy(isUserRejected = false, isSessionCompleted = true) }
+    fun dismissBlockDialog() {
+        _state.update { it.copy(isParticipationBlocked = false, isSessionCompleted = true) }
     }
 
     override fun onCleared() {

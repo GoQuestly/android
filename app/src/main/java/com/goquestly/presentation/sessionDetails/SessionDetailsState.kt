@@ -1,6 +1,7 @@
 package com.goquestly.presentation.sessionDetails
 
 import com.goquestly.domain.model.Participant
+import com.goquestly.domain.model.ParticipationStatus
 import com.goquestly.domain.model.QuestSession
 
 data class SessionDetailsState(
@@ -10,5 +11,6 @@ data class SessionDetailsState(
     val error: String? = null,
     val isParticipantsSheetOpen: Boolean = false,
     val isLeaveConfirmationSheetOpen: Boolean = false,
-    val isCurrentUserRejected: Boolean = false
+    val currentUserParticipationStatus: ParticipationStatus? = null,
+    val currentUserBlockReason: String? = null
 )

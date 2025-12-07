@@ -28,4 +28,6 @@ interface AuthRepository {
     suspend fun isLoggedIn(): Boolean
 
     suspend fun logout()
+
+    suspend fun syncServerTime(): Result<Unit>
 }

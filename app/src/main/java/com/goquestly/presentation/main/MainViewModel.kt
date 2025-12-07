@@ -23,7 +23,14 @@ class MainViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
+        syncServerTime()
         checkAuthState()
+    }
+
+    private fun syncServerTime() {
+        viewModelScope.launch {
+            authRepository.syncServerTime()
+        }
     }
 
     fun checkAuthState() {
