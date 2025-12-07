@@ -1,5 +1,6 @@
 package com.goquestly.domain.useCase
 
+import com.goquestly.domain.exception.UnauthorizedException
 import com.goquestly.domain.model.AuthState
 import com.goquestly.domain.repository.AuthRepository
 import com.goquestly.domain.repository.UserRepository
@@ -22,7 +23,12 @@ class GetAuthStateUseCase @Inject constructor(
             val user = profileResult.getOrThrow()
             return Result.success(AuthState.Authenticated(user.isEmailVerified))
         } else {
-            return Result.failure(profileResult.exceptionOrNull()!!)
+            val exception = profileResult.exceptionOrNull()
+            if (exception is UnauthorizedException) {
+                authRepository.logout()
+                return Result.success(AuthState.Unauthenticated)
+            }
+            return Result.failure(exception!!)
         }
     }
 }

@@ -4,6 +4,7 @@ import com.goquestly.data.remote.dto.QuestSessionDto
 import com.goquestly.data.remote.dto.QuestSessionSummaryDto
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.QuestSessionSummary
+import com.goquestly.domain.model.SessionEndReason
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -14,19 +15,14 @@ fun QuestSessionDto.toDomainModel(): QuestSession {
         questTitle = questTitle,
         startDate = startDate,
         endDate = endDate,
-        endReason = endReason,
+        endReason = SessionEndReason.entries.find { it.value == endReason },
         inviteToken = inviteToken,
         participants = participants.map { it.toDomainModel() },
         isActive = isActive,
         participantCount = participantCount,
         questPointCount = questPointCount ?: 0,
         passedQuestPointCount = passedQuestPointCount ?: 0,
-        questPhotoUrl = questPhotoUrl
-            ?.removePrefix("http")
-            ?.removePrefix("https")
-            ?.let {
-                "https$it"
-            },
+        questPhotoUrl = questPhotoUrl,
         questDescription = questDescription,
         questMaxDurationMinutes = questMaxDurationMinutes,
         startPointName = startPointName
@@ -40,6 +36,7 @@ fun QuestSessionSummaryDto.toDomainModel() = QuestSessionSummary(
     questTitle = questTitle,
     startDate = startDate,
     endDate = endDate,
+    endReason = SessionEndReason.entries.find { it.value == endReason },
     isActive = isActive,
     participantCount = participantCount,
     questPointCount = questPointCount,

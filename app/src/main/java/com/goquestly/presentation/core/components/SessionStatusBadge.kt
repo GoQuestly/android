@@ -23,18 +23,21 @@ fun SessionStatusBadge(
         SessionStatus.IN_PROGRESS -> stringResource(R.string.in_progress)
         SessionStatus.SCHEDULED -> stringResource(R.string.scheduled)
         SessionStatus.COMPLETED -> stringResource(R.string.completed)
+        SessionStatus.CANCELLED -> stringResource(R.string.cancelled)
     }
 
     val backgroundColor = when (status) {
         SessionStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
         SessionStatus.SCHEDULED -> MaterialTheme.colorScheme.surfaceContainer
         SessionStatus.COMPLETED -> MaterialTheme.colorScheme.tertiaryContainer
+        SessionStatus.CANCELLED -> MaterialTheme.colorScheme.errorContainer
     }
 
     val textColor = when (status) {
         SessionStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSecondary
         SessionStatus.SCHEDULED -> MaterialTheme.colorScheme.onSecondaryContainer
         SessionStatus.COMPLETED -> MaterialTheme.colorScheme.onTertiaryContainer
+        SessionStatus.CANCELLED -> MaterialTheme.colorScheme.onErrorContainer
     }
 
     Text(

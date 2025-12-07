@@ -10,7 +10,7 @@ data class QuestSession(
     override val questTitle: String,
     override val startDate: Instant,
     override val endDate: Instant?,
-    val endReason: String?,
+    override val endReason: SessionEndReason?,
     val inviteToken: String,
     val participants: List<Participant>,
     override val isActive: Boolean,

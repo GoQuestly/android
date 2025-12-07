@@ -7,7 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goquestly.R
 import com.goquestly.data.local.ActiveSessionManager
-import com.goquestly.data.remote.websocket.ParticipantSocketService
+import com.goquestly.data.local.ServerTimeManager
+import com.goquestly.data.remote.websocket.SessionEventsSocketService
 import com.goquestly.domain.model.ParticipantEvent
 import com.goquestly.domain.model.ParticipationStatus
 import com.goquestly.domain.model.SessionStatus
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 
@@ -37,9 +37,10 @@ import kotlin.time.ExperimentalTime
 class SessionDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val sessionRepository: SessionRepository,
-    private val participantSocketService: ParticipantSocketService,
+    private val sessionEventsSocketService: SessionEventsSocketService,
     private val activeSessionManager: ActiveSessionManager,
     private val userRepository: com.goquestly.domain.repository.UserRepository,
+    private val serverTimeManager: ServerTimeManager,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -80,16 +81,31 @@ class SessionDetailsViewModel @Inject constructor(
                         session.participants.find { it.userId == userId }
                     }
 
-                    val isRejected =
-                        currentUserParticipant?.status == ParticipationStatus.REJECTED &&
-                                session.endDate == null
+                    val currentUserStatus = if (
+                        currentUserParticipant?.status?.blocksSessionProgression == true &&
+                        session.endDate == null
+                    ) {
+                        currentUserParticipant.status
+                    } else {
+                        null
+                    }
+
+                    val currentUserBlockReason = if (
+                        currentUserParticipant?.status?.blocksSessionProgression == true &&
+                        session.endDate == null
+                    ) {
+                        currentUserParticipant.rejectionReason
+                    } else {
+                        null
+                    }
 
                     _state.update {
                         it.copy(
                             session = session,
                             participants = session.participants,
                             isLoading = false,
-                            isCurrentUserRejected = isRejected,
+                            currentUserParticipationStatus = currentUserStatus,
+                            currentUserBlockReason = currentUserBlockReason
                         )
                     }
                 }
@@ -107,24 +123,24 @@ class SessionDetailsViewModel @Inject constructor(
     private fun connectToWebSocket() {
         viewModelScope.launch {
             try {
-                participantSocketService.connect()
-                participantSocketService.subscribeToSession(sessionId)
+                sessionEventsSocketService.connect()
+                sessionEventsSocketService.subscribeToSession(sessionId)
                 Log.d(TAG, "Subscribed to session $sessionId")
 
                 launch {
-                    participantSocketService.observeParticipantJoined().collect { event ->
+                    sessionEventsSocketService.observeParticipantJoined().collect { event ->
                         handleParticipantJoined(event)
                     }
                 }
 
                 launch {
-                    participantSocketService.observeParticipantLeft().collect { event ->
+                    sessionEventsSocketService.observeParticipantLeft().collect { event ->
                         handleParticipantLeft(event)
                     }
                 }
 
                 launch {
-                    participantSocketService.observeSubscribeError().collect { error ->
+                    sessionEventsSocketService.observeSubscribeError().collect { error ->
                         Log.e(TAG, "Subscribe error: $error")
                     }
                 }
@@ -204,7 +220,7 @@ class SessionDetailsViewModel @Inject constructor(
                         return@flatMapLatest emptyFlow()
                     }
 
-                    val now = Clock.System.now()
+                    val now = serverTimeManager.getCurrentServerTime()
                     val timeUntilStart = session.startDate - now
 
                     if (timeUntilStart.inWholeMilliseconds > 0) {
@@ -233,7 +249,7 @@ class SessionDetailsViewModel @Inject constructor(
                         return@flatMapLatest emptyFlow()
                     }
 
-                    val now = Clock.System.now()
+                    val now = serverTimeManager.getCurrentServerTime()
                     val sessionEndTime = session.startDate + session.questMaxDurationMinutes.minutes
                     val timeUntilCompletion = sessionEndTime - now
 
@@ -285,7 +301,7 @@ class SessionDetailsViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        participantSocketService.unsubscribeFromSession(sessionId)
+        sessionEventsSocketService.unsubscribeFromSession(sessionId)
         super.onCleared()
     }
 }

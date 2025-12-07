@@ -17,20 +17,20 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
 
 @Singleton
-class ParticipantSocketService @Inject constructor(
+class SessionEventsSocketService @Inject constructor(
     tokenManager: TokenManager,
     json: Json
 ) : BaseSocketService(
     tokenManager = tokenManager,
     json = json,
-    endpoint = "participants",
+    endpoint = "session-events",
     logTag = TAG
 ) {
     private val participantJoinedCallbacks = mutableListOf<(ParticipantEvent.Joined) -> Unit>()
     private val participantLeftCallbacks = mutableListOf<(ParticipantEvent.Left) -> Unit>()
 
     companion object {
-        private const val TAG = "ParticipantSocket"
+        private const val TAG = "SessionEventsSocket"
         private const val ERROR_SUBSCRIBE = "subscribe-error"
         private const val ERROR_UNSUBSCRIBE = "unsubscribe-error"
     }
