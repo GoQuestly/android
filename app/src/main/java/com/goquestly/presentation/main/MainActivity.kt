@@ -83,8 +83,10 @@ class MainActivity : ComponentActivity() {
                                     authState = state.authState!!,
                                     activeSessionId = state.activeSessionId,
                                     initialIntent = currentIntent,
+                                    pendingInviteToken = state.pendingInviteToken,
                                     onAuthStateChanged = mainViewModel::checkAuthState,
-                                    onLogout = mainViewModel::logout
+                                    onLogout = mainViewModel::logout,
+                                    onSetPendingInviteToken = mainViewModel::setPendingInviteToken
                                 )
                             }
                         }

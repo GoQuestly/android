@@ -48,4 +48,8 @@ class MainViewModel @Inject constructor(
             checkAuthState()
         }
     }
+
+    fun setPendingInviteToken(token: String?) {
+        _state.update { it.copy(pendingInviteToken = token) }
+    }
 }
