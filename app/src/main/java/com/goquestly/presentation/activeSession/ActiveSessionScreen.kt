@@ -107,6 +107,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.abs
+import com.goquestly.domain.model.ParticipantScore
+import com.goquestly.presentation.core.components.ProfileAvatar
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -561,6 +563,8 @@ private fun ActiveSessionContent(
                     elapsedTimeSeconds = state.elapsedTimeSeconds,
                     sessionId = state.session.id,
                     userLocation = state.userLocation,
+                    leaderboard = state.leaderboard,
+                    currentUserId = state.currentUserId,
                     onMoveCamera = { latLng ->
                         onDisableCameraTracking()
                         targetCameraLocation = latLng
@@ -893,6 +897,8 @@ private fun CheckpointsBottomSheet(
     elapsedTimeSeconds: Long,
     sessionId: Int,
     userLocation: LatLng?,
+    leaderboard: List<ParticipantScore>,
+    currentUserId: Int?,
     onMoveCamera: (LatLng) -> Unit,
     onNavigateToTask: ((sessionId: Int, pointId: Int, pointName: String) -> Unit)?,
     onPeekHeightMeasured: (Float) -> Unit,
@@ -1075,6 +1081,28 @@ private fun CheckpointsBottomSheet(
                     }
                 }
             }
+
+            if (leaderboard.isNotEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = "Participants progress",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                items(leaderboard) { participant ->
+                    val rank = leaderboard.indexOf(participant) + 1
+                    ParticipantProgressItem(
+                        rank = rank,
+                        participant = participant,
+                        isMe = currentUserId != null && participant.userId == currentUserId
+                    )
+                }
+            }
         }
     }
 }
@@ -1251,6 +1279,61 @@ private fun CheckpointItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ParticipantProgressItem(
+    rank: Int,
+    participant: ParticipantScore,
+    isMe: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                if (isMe) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceContainer
+            )
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "$rank",
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(Modifier.width(12.dp))
+
+        ProfileAvatar(
+            avatarUrl = participant.photoUrl,
+            onClick = {},
+            size = 40.dp
+        )
+
+        Spacer(Modifier.width(12.dp))
+
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = participant.userName,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "Tasks: ${participant.completedTasksCount}/${participant.totalTasksInQuest}",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Text(
+            text = "${participant.totalScore}",
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
 

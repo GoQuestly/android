@@ -17,6 +17,7 @@ import com.goquestly.data.remote.dto.QuizAnswerSubmitDto
 import com.goquestly.data.remote.dto.RegisterRequestDto
 import com.goquestly.data.remote.dto.ResetPasswordRequestDto
 import com.goquestly.data.remote.dto.ServerTimeDto
+import com.goquestly.data.remote.dto.SessionScoresDto
 import com.goquestly.data.remote.dto.TaskStartResponseDto
 import com.goquestly.data.remote.dto.TaskSubmitResponseDto
 import com.goquestly.data.remote.dto.UpdateProfileDto
@@ -153,4 +154,10 @@ interface ApiService {
         @Path("pointId") pointId: Int,
         @Part file: MultipartBody.Part
     ): TaskSubmitResponseDto
+
+    @RequiresAuth
+    @GET("/participant/sessions/{id}/scores")
+    suspend fun getSessionScores(
+        @Path("id") sessionId: Int
+    ): SessionScoresDto
 }

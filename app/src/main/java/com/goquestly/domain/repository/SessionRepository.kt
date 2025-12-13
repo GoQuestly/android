@@ -1,6 +1,7 @@
 package com.goquestly.domain.repository
 
 import com.goquestly.domain.model.PaginatedResponse
+import com.goquestly.domain.model.ParticipantScore
 import com.goquestly.domain.model.QuestPoint
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.QuestSessionSummary
@@ -43,4 +44,6 @@ interface SessionRepository {
     ): Result<TaskSubmitData?>
 
     suspend fun submitPhoto(sessionId: Int, pointId: Int, photoFile: File): Result<TaskSubmitData>
+
+    suspend fun getSessionScores(sessionId: Int): Result<List<ParticipantScore>>
 }
