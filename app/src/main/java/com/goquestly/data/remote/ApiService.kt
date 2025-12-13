@@ -2,6 +2,7 @@ package com.goquestly.data.remote
 
 import com.goquestly.data.remote.annotation.RequiresAuth
 import com.goquestly.data.remote.dto.AuthResponseDto
+import com.goquestly.data.remote.dto.DeviceTokenRequestDto
 import com.goquestly.data.remote.dto.GoogleSignInRequestDto
 import com.goquestly.data.remote.dto.JoinSessionRequestDto
 import com.goquestly.data.remote.dto.LoginRequestDto
@@ -66,6 +67,14 @@ interface ApiService {
     suspend fun updateAvatar(
         @Part file: MultipartBody.Part
     )
+
+    @RequiresAuth
+    @POST("/user/device-token")
+    suspend fun registerDeviceToken(@Body request: DeviceTokenRequestDto)
+
+    @RequiresAuth
+    @DELETE("/user/device-token")
+    suspend fun deleteDeviceToken()
 
     @RequiresAuth
     @POST("/participant/sessions/join")

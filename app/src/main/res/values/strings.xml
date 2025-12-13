@@ -103,4 +103,6 @@
     <string name="participant_rejected_title">Participation Rejected</string>
     <string name="participant_rejected_message">You have been removed from this session because you are too far from the starting point.</string>
     <string name="participant_rejected_details_message">You cannot join this session because your participation was rejected: you are too far from the starting point.</string>
+    <string name="fcm_notification_channel_name">Quest Notifications</string>
+    <string name="fcm_notification_channel_description">Notifications about quest sessions, invitations, and updates</string>
 </resources>

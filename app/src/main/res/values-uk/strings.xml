@@ -105,4 +105,6 @@
     <string name="participant_rejected_title">Участь відхилено</string>
     <string name="participant_rejected_message">Вас було видалено з цієї сесії, оскільки ви знаходитесь надто далеко від початкової точки.</string>
     <string name="participant_rejected_details_message">Ви не можете приєднатися до цієї сесії, оскільки вашу участь було відхилено: ви знаходитесь надто далеко від початкової точки.</string>
+    <string name="fcm_notification_channel_name">Сповіщення про квести</string>
+    <string name="fcm_notification_channel_description">Сповіщення про сесії квестів, запрошення і оновлення</string>
 </resources>

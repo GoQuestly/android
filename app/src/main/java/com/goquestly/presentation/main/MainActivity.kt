@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.goquestly.data.service.FirebaseMessagingService
 import com.goquestly.domain.model.AuthState
 import com.goquestly.presentation.core.components.ErrorScreen
 import com.goquestly.presentation.core.theme.GoquestlyTheme
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         currentIntent = intent
+        handleNotificationIntent(intent)
 
         splashScreen.setKeepOnScreenCondition {
             mainViewModel.state.value.isLoading
@@ -100,6 +103,17 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         currentIntent = intent
         setIntent(intent)
+        handleNotificationIntent(intent)
+    }
+
+    private fun handleNotificationIntent(intent: Intent?) {
+        intent?.getStringExtra(FirebaseMessagingService.EXTRA_NOTIFICATION_TYPE)?.let { type ->
+            Log.d(TAG, "Notification clicked with type: $type")
+        }
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }
 
