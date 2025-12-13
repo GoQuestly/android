@@ -4,8 +4,10 @@ import com.goquestly.data.remote.ApiService
 import com.goquestly.data.remote.dto.CodeWordSubmitDto
 import com.goquestly.data.remote.dto.JoinSessionRequestDto
 import com.goquestly.data.remote.dto.QuizAnswerSubmitDto
+import com.goquestly.domain.mapper.toDomain
 import com.goquestly.domain.mapper.toDomainModel
 import com.goquestly.domain.model.PaginatedResponse
+import com.goquestly.domain.model.ParticipantScore
 import com.goquestly.domain.model.QuestPoint
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.QuestSessionSummary
@@ -112,4 +114,9 @@ class SessionRepositoryImpl @Inject constructor(
         val filePart = MultipartBody.Part.createFormData("file", photoFile.name, requestFile)
         apiService.submitPhoto(sessionId, pointId, filePart).toDomainModel()
     }
+
+    override suspend fun getSessionScores(sessionId: Int): Result<List<ParticipantScore>> =
+        runCatchingAppException {
+            apiService.getSessionScores(sessionId).toDomain()
+        }
 }
