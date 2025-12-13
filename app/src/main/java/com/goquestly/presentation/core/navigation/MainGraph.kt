@@ -12,6 +12,7 @@ import com.goquestly.presentation.home.HomeScreen
 import com.goquestly.presentation.invite.InviteHandlerScreen
 import com.goquestly.presentation.profile.ProfileScreen
 import com.goquestly.presentation.sessionDetails.SessionDetailsScreen
+import com.goquestly.presentation.sessionResults.SessionResultsScreen
 import com.goquestly.presentation.task.TaskScreen
 import com.goquestly.presentation.task.TaskSuccessScreen
 import com.goquestly.presentation.verifyEmail.VerifyEmailScreen
@@ -70,6 +71,9 @@ fun NavGraphBuilder.mainGraph(
                 onJoinSession = {
                     navController.navigate(NavScreen.ActiveSession.createRoute(it))
                 },
+                onViewResults = {
+                    navController.navigate(NavScreen.SessionResults.createRoute(it))
+                },
                 onNavigateBack = {
                     if (!navController.popBackStack()) {
                         navController.navigate(NavScreen.Home.route) {
@@ -121,6 +125,13 @@ fun NavGraphBuilder.mainGraph(
             ActiveSessionScreen(
                 onLeaveSession = {
                     navController.navigate(NavScreen.SessionDetails.createRoute(sessionId)) {
+                        popUpTo(NavScreen.Home.route) {
+                            inclusive = false
+                        }
+                    }
+                },
+                onSessionEnded = { endedSessionId ->
+                    navController.navigate(NavScreen.SessionResults.createRoute(endedSessionId)) {
                         popUpTo(NavScreen.Home.route) {
                             inclusive = false
                         }
@@ -185,6 +196,25 @@ fun NavGraphBuilder.mainGraph(
                     navController.navigate(NavScreen.ActiveSession.createRoute(sessionId)) {
                         popUpTo(NavScreen.ActiveSession.route) {
                             inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = NavScreen.SessionResults.route,
+            arguments = listOf(
+                navArgument("sessionId") { type = NavType.IntType }
+            )
+        ) {
+            SessionResultsScreen(
+                onNavigateBack = {
+                    if (!navController.popBackStack()) {
+                        navController.navigate(NavScreen.Home.route) {
+                            popUpTo(NavScreen.Home.route) {
+                                inclusive = true
+                            }
                         }
                     }
                 }

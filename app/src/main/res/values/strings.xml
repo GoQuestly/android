@@ -170,4 +170,18 @@
     <string name="photo_rejected">Photo Rejected</string>
     <string name="points_earned">Points earned: %1$d</string>
     <string name="rejection_reason_label">Reason:</string>
+    <string name="session_results_title">Session Results</string>
+    <string name="view_results">View Results</string>
+    <string name="session_statistics">Session Statistics</string>
+    <string name="leaderboard_title">Leaderboard</string>
+    <string name="total_participants">Total participants:</string>
+    <string name="finished_participants">Finished:</string>
+    <string name="did_not_finish_participants">Did not finish:</string>
+    <string name="no_participants_finished">No participants have finished yet</string>
+    <string name="checkpoints_passed">%1$d checkpoints</string>
+    <string name="points">pts</string>
+    <string name="duration_format_hms">%1$d:%2$02d:%3$02d</string>
+    <string name="duration_format_ms">%1$d:%2$02d</string>
+    <string name="duration_format_s">0:%1$02d</string>
+    <string name="retry">Retry</string>
 </resources>
