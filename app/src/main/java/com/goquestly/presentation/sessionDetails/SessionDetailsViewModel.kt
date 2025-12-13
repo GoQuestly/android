@@ -140,6 +140,20 @@ class SessionDetailsViewModel @Inject constructor(
                 }
 
                 launch {
+                    sessionEventsSocketService.observeSessionCancelled().collect {
+                        Log.d(TAG, "Session cancelled")
+                        loadSessionDetails()
+                    }
+                }
+
+                launch {
+                    sessionEventsSocketService.observeSessionEnded().collect {
+                        Log.d(TAG, "Session ended")
+                        loadSessionDetails()
+                    }
+                }
+
+                launch {
                     sessionEventsSocketService.observeSubscribeError().collect { error ->
                         Log.e(TAG, "Subscribe error: $error")
                     }

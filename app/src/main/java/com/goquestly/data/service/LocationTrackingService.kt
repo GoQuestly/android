@@ -123,6 +123,13 @@ class LocationTrackingService : Service() {
                 }
 
                 launch {
+                    activeSessionSocketService.observeSessionEnded().collect {
+                        activeSessionManager.emitSessionEnded()
+                        stopTracking()
+                    }
+                }
+
+                launch {
                     activeSessionSocketService.observePhotoModerated().collect { event ->
                         activeSessionManager.emitPhotoModerated(event.toDomainModel())
                     }
