@@ -191,6 +191,29 @@ class SessionDetailsViewModel @Inject constructor(
                 )
             }
         }
+
+        if (event.photoUrl == null) {
+            viewModelScope.launch {
+                sessionRepository.getSessionDetails(sessionId)
+                    .onSuccess { session ->
+                        val participantWithPhoto =
+                            session.participants.find { it.userId == event.userId }
+                        if (participantWithPhoto != null && participantWithPhoto.photoUrl != null) {
+                            _state.update { currentState ->
+                                currentState.copy(
+                                    participants = currentState.participants.map { participant ->
+                                        if (participant.userId == event.userId) {
+                                            participant.copy(photoUrl = participantWithPhoto.photoUrl)
+                                        } else {
+                                            participant
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+            }
+        }
     }
 
     private fun handleParticipantLeft(event: ParticipantEvent.Left) {
