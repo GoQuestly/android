@@ -10,6 +10,7 @@ sealed class BaseQuestSession {
     abstract val questTitle: String
     abstract val startDate: Instant
     abstract val endDate: Instant?
+    abstract val endReason: SessionEndReason?
     abstract val isActive: Boolean
     abstract val participantCount: Int
     abstract val questPointCount: Int
@@ -17,6 +18,7 @@ sealed class BaseQuestSession {
 
     val status: SessionStatus
         get() = when {
+            endDate != null && endReason == SessionEndReason.CANCELLED -> SessionStatus.CANCELLED
             endDate != null -> SessionStatus.COMPLETED
             isActive -> SessionStatus.IN_PROGRESS
             else -> SessionStatus.SCHEDULED

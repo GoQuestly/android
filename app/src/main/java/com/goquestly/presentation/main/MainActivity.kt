@@ -27,6 +27,8 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapsSdkInitializedCallback
 import com.goquestly.data.service.FirebaseMessagingService
 import com.goquestly.domain.model.AuthState
 import com.goquestly.presentation.core.components.ErrorScreen
@@ -34,7 +36,7 @@ import com.goquestly.presentation.core.theme.GoquestlyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
 
     private val mainViewModel: MainViewModel by viewModels()
     private var currentIntent by mutableStateOf<Intent?>(null)
@@ -44,6 +46,8 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)
 
         currentIntent = intent
         handleNotificationIntent(intent)
@@ -110,6 +114,10 @@ class MainActivity : ComponentActivity() {
         intent?.getStringExtra(FirebaseMessagingService.EXTRA_NOTIFICATION_TYPE)?.let { type ->
             Log.d(TAG, "Notification clicked with type: $type")
         }
+    }
+
+    override fun onMapsSdkInitialized(renderer: MapsInitializer.Renderer) {
+        Log.d(TAG, "Maps SDK initialized with renderer: $renderer")
     }
 
     companion object {
