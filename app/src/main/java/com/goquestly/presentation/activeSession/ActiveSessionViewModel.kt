@@ -51,12 +51,15 @@ class ActiveSessionViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var sessionMonitorJob: Job? = null
 
+    private var leaderboardJob: Job? = null
+
     init {
         loadSession()
         observeParticipationBlockEvents()
         observeLocationUpdates()
         observePointPassedEvents()
         observeSessionCancelled()
+        observeSessionEnded()
         observePhotoModerated()
     }
 
@@ -93,11 +96,21 @@ class ActiveSessionViewModel @Inject constructor(
         }
     }
 
+    private fun observeSessionEnded() {
+        viewModelScope.launch {
+            activeSessionManager.sessionEndedEvents.collect {
+                handleSessionCompletion()
+            }
+        }
+    }
+
     private fun observePhotoModerated() {
         viewModelScope.launch {
             activeSessionManager.photoModeratedEvents.collect { event ->
                 _state.update { it.copy(photoModeratedEvent = event) }
                 refreshQuestPoints()
+
+                refreshLeaderboardOnce()
             }
         }
     }
@@ -124,12 +137,8 @@ class ActiveSessionViewModel @Inject constructor(
                     hasTask = hasTask,
                     taskStatus = taskStatus
                 ),
-                questPoints = it.questPoints.map { point ->
-                    if (point.pointId == event.questPointId) {
-                        point.copy(isPassed = true)
-                    } else {
-                        point
-                    }
+                questPoints = it.questPoints.map { p ->
+                    if (p.pointId == event.questPointId) p.copy(isPassed = true) else p
                 }
             )
         }
@@ -141,6 +150,8 @@ class ActiveSessionViewModel @Inject constructor(
                 }
             }
         }
+
+        refreshLeaderboardOnce()
     }
 
     fun dismissPointPassedDialog() {
@@ -167,10 +178,15 @@ class ActiveSessionViewModel @Inject constructor(
             val sessionDeferred = async { sessionRepository.getSessionDetails(sessionId) }
             val pointsDeferred = async { sessionRepository.getQuestPoints(sessionId) }
             val activeTaskDeferred = async { sessionRepository.getActiveTask(sessionId) }
+            val profileDeferred = async { userRepository.getProfile() }
 
             val sessionResult = sessionDeferred.await()
             val pointsResult = pointsDeferred.await()
             val activeTaskResult = activeTaskDeferred.await()
+            val profileResult = profileDeferred.await()
+
+            val currentUserId = profileResult.getOrNull()?.id
+            _state.update { it.copy(currentUserId = currentUserId) }
 
             sessionResult.onSuccess { session ->
                 if (!session.isActive) {
@@ -178,14 +194,18 @@ class ActiveSessionViewModel @Inject constructor(
                     return@launch
                 }
 
-                userRepository.getProfile().getOrNull()?.let { currentUser ->
-                    session.participants.find { it.userId == currentUser.id }?.rejectionReason?.let { reasonString ->
-                        ParticipationBlockReason.entries.find { it.value == reasonString }
-                            ?.let { reason ->
-                                handleParticipationBlock(reason)
-                                return@launch
-                            }
-                    }
+                currentUserId?.let { uid ->
+                    session.participants
+                        .find { it.userId == uid }
+                        ?.rejectionReason
+                        ?.let { reasonString ->
+                            ParticipationBlockReason.entries
+                                .find { it.value == reasonString }
+                                ?.let { reason ->
+                                    handleParticipationBlock(reason)
+                                    return@launch
+                                }
+                        }
                 }
 
                 startTimer(session)
@@ -202,6 +222,8 @@ class ActiveSessionViewModel @Inject constructor(
                             activeTask = activeTask
                         )
                     }
+
+                    startLeaderboardPolling()
                 }.onFailure {
                     _state.update {
                         it.copy(
@@ -221,6 +243,46 @@ class ActiveSessionViewModel @Inject constructor(
         }
     }
 
+    private fun startLeaderboardPolling() {
+        leaderboardJob?.cancel()
+        leaderboardJob = viewModelScope.launch {
+            fetchLeaderboard()
+
+            while (isActive) {
+                delay(2_000)
+                fetchLeaderboard()
+            }
+        }
+    }
+
+    private suspend fun fetchLeaderboard() {
+        _state.update { it.copy(isLeaderboardLoading = true) }
+
+        sessionRepository.getSessionScores(sessionId)
+            .onSuccess { list ->
+                val sorted = list.sortedByDescending { it.totalScore }
+
+                val totalTasks = sorted.firstOrNull()?.totalTasksInQuest ?: 0
+
+                _state.update {
+                    it.copy(
+                        leaderboard = sorted,
+                        totalTasksInQuest = totalTasks,
+                        isLeaderboardLoading = false
+                    )
+                }
+            }
+            .onFailure {
+                _state.update { it.copy(isLeaderboardLoading = false) }
+            }
+    }
+
+    private fun refreshLeaderboardOnce() {
+        viewModelScope.launch {
+            fetchLeaderboard()
+        }
+    }
+
     @OptIn(ExperimentalTime::class)
     private fun startTimer(session: QuestSession) {
         timerJob?.cancel()
@@ -234,9 +296,7 @@ class ActiveSessionViewModel @Inject constructor(
 
             while (isActive) {
                 delay(1.seconds)
-                _state.update {
-                    it.copy(elapsedTimeSeconds = it.elapsedTimeSeconds + 1)
-                }
+                _state.update { it.copy(elapsedTimeSeconds = it.elapsedTimeSeconds + 1) }
             }
         }
     }
@@ -260,6 +320,8 @@ class ActiveSessionViewModel @Inject constructor(
 
     private fun handleSessionCompletion() {
         viewModelScope.launch {
+            leaderboardJob?.cancel()
+
             if (LocationTrackingService.isRunning) {
                 LocationTrackingService.stopService(context)
             }
@@ -298,18 +360,20 @@ class ActiveSessionViewModel @Inject constructor(
 
             delay(300)
 
+            leaderboardJob?.cancel()
+
             if (LocationTrackingService.isRunning) {
                 LocationTrackingService.stopService(context)
             }
 
             activeSessionManager.clearActiveSession()
-
             onLeft()
         }
     }
 
     fun handleParticipationBlock(reason: ParticipationBlockReason) {
         viewModelScope.launch {
+            leaderboardJob?.cancel()
             activeSessionManager.clearActiveSession()
             _state.update { it.copy(isParticipationBlocked = true, blockReason = reason) }
         }
@@ -323,12 +387,11 @@ class ActiveSessionViewModel @Inject constructor(
         super.onCleared()
         timerJob?.cancel()
         sessionMonitorJob?.cancel()
+        leaderboardJob?.cancel()
     }
 
     fun startLocationUpdates() {
-        if (LocationTrackingService.isRunning) {
-            return
-        }
+        if (LocationTrackingService.isRunning) return
         LocationTrackingService.startService(context, sessionId)
     }
 

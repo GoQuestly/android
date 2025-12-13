@@ -1,6 +1,7 @@
 package com.goquestly.presentation.activeSession
 
 import com.google.android.gms.maps.model.LatLng
+import com.goquestly.domain.model.ParticipantScore
 import com.goquestly.domain.model.ParticipationBlockReason
 import com.goquestly.domain.model.PhotoModeratedEvent
 import com.goquestly.domain.model.QuestPoint
@@ -23,7 +24,11 @@ data class ActiveSessionState(
     val isCameraTrackingEnabled: Boolean = true,
     val pointPassedEvent: PointPassedEvent? = null,
     val activeTask: TaskStartData? = null,
-    val photoModeratedEvent: PhotoModeratedEvent? = null
+    val photoModeratedEvent: PhotoModeratedEvent? = null,
+    val leaderboard: List<ParticipantScore> = emptyList(),
+    val isLeaderboardLoading: Boolean = false,
+    val totalTasksInQuest: Int = 0,
+    val currentUserId: Int? = null
 )
 
 data class PointPassedEvent(
