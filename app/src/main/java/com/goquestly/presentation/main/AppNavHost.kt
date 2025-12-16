@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -102,24 +103,26 @@ fun AppNavHost(
     }
 
     MainScaffold(navController = navController) { modifier ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = modifier
-        ) {
-            authGraph(
+        key(startDestination) {
+            NavHost(
                 navController = navController,
-                onAuthSuccess = onAuthStateChanged
-            )
+                startDestination = startDestination,
+                modifier = modifier
+            ) {
+                authGraph(
+                    navController = navController,
+                    onAuthSuccess = onAuthStateChanged
+                )
 
-            mainGraph(
-                navController = navController,
-                startWithVerification = when (authState) {
-                    is AuthState.Authenticated -> !authState.isEmailVerified
-                    else -> false
-                },
-                onLogout = onLogout
-            )
+                mainGraph(
+                    navController = navController,
+                    startWithVerification = when (authState) {
+                        is AuthState.Authenticated -> !authState.isEmailVerified
+                        else -> false
+                    },
+                    onLogout = onLogout
+                )
+            }
         }
     }
 }
