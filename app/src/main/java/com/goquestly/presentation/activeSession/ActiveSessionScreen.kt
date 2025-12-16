@@ -126,7 +126,11 @@ fun ActiveSessionScreen(
         if (state.isSessionCompleted) {
             val sessionId = state.session?.id
             if (sessionId != null) {
-                onSessionEnded(sessionId)
+                if (state.blockReason != null) {
+                    onLeaveSession()
+                } else {
+                    onSessionEnded(sessionId)
+                }
             } else {
                 onLeaveSession()
             }
