@@ -170,13 +170,13 @@ private fun StatisticsContent(
                 StatCard(
                     modifier = Modifier.weight(1f),
                     title = stringResource(R.string.best_rank),
-                    value = "#${stats.bestRank}",
+                    value = stats.bestRank?.let { "#${stats.bestRank}" } ?: "-",
                     icon = Icons.Default.EmojiEvents
                 )
                 StatCard(
                     modifier = Modifier.weight(1f),
                     title = stringResource(R.string.average_rank),
-                    value = "#${stats.averageRank}"
+                    value = stats.averageRank?.let { "#${stats.averageRank}" } ?: "-"
                 )
             }
         }
@@ -400,19 +400,14 @@ private fun FinishRateDonut(
 
 @Composable
 private fun SessionsStatusBars(stats: SessionStatistics) {
-    val total = stats.totalSessions.coerceAtLeast(1)
+    val total = stats.totalSessions.coerceAtLeast(0)
     val finished = stats.finishedSessions.coerceAtLeast(0)
     val bad = (stats.rejectedSessions + stats.disqualifiedSessions).coerceAtLeast(0)
     val other = (total - finished - bad).coerceAtLeast(0)
 
-    val finishedRatio = finished.toFloat() / total
-    val badRatio = bad.toFloat() / total
-    val otherRatio = other.toFloat() / total
-
     val finishedColor = MaterialTheme.colorScheme.primary
     val badColor = MaterialTheme.colorScheme.error
     val otherColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f)
-    val track = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.07f)
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         LegendRow(

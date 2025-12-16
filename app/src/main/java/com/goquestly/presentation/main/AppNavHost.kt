@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,10 +24,7 @@ fun AppNavHost(
     onAuthStateChanged: () -> Unit,
     onLogout: () -> Unit
 ) {
-    val startDestination = when (authState) {
-        is AuthState.Unauthenticated -> NavGraph.AUTH_GRAPH.route
-        is AuthState.Authenticated -> NavGraph.MAIN_GRAPH.route
-    }
+    val startDestination = NavGraph.AUTH_GRAPH.route
 
     val isInitialIntentDeeplink = remember {
         initialIntent?.data?.pathSegments?.firstOrNull() == "invite"
@@ -75,6 +71,7 @@ fun AppNavHost(
                 if (navController.currentDestination?.route != NavGraph.AUTH_GRAPH.route) {
                     navController.navigate(NavGraph.AUTH_GRAPH.route) {
                         popUpTo(0) { inclusive = true }
+                        restoreState = false  // Prevent state restoration when switching graphs
                     }
                 }
             }
@@ -83,6 +80,7 @@ fun AppNavHost(
                 if (navController.currentDestination?.route != NavGraph.MAIN_GRAPH.route) {
                     navController.navigate(NavGraph.MAIN_GRAPH.route) {
                         popUpTo(0) { inclusive = true }
+                        restoreState = false  // Prevent state restoration when switching graphs
                     }
                 }
             }
@@ -103,26 +101,24 @@ fun AppNavHost(
     }
 
     MainScaffold(navController = navController) { modifier ->
-        key(startDestination) {
-            NavHost(
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            modifier = modifier
+        ) {
+            authGraph(
                 navController = navController,
-                startDestination = startDestination,
-                modifier = modifier
-            ) {
-                authGraph(
-                    navController = navController,
-                    onAuthSuccess = onAuthStateChanged
-                )
+                onAuthSuccess = onAuthStateChanged
+            )
 
-                mainGraph(
-                    navController = navController,
-                    startWithVerification = when (authState) {
-                        is AuthState.Authenticated -> !authState.isEmailVerified
-                        else -> false
-                    },
-                    onLogout = onLogout
-                )
-            }
+            mainGraph(
+                navController = navController,
+                startWithVerification = when (authState) {
+                    is AuthState.Authenticated -> !authState.isEmailVerified
+                    else -> false
+                },
+                onLogout = onLogout
+            )
         }
     }
 }
