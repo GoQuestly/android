@@ -168,8 +168,4 @@
     <string name="photo_rejected">Photo Rejected</string>
     <string name="points_earned">Points earned: %1$d</string>
     <string name="rejection_reason_label">Reason:</string>
-    <string name="participants_progress">Participants progress</string>
-    <string name="at_checkpoint">At: %1$s</string>
-    <string name="tasks_progress">Tasks: %1$d/%2$d</string>
-    <string name="you">You</string>
 </resources>
