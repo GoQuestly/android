@@ -1086,7 +1086,7 @@ private fun CheckpointsBottomSheet(
                 item {
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
-                        text = "Participants progress",
+                        text = stringResource(R.string.participants_progress),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -1323,9 +1323,12 @@ private fun ParticipantProgressItem(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Tasks: ${participant.completedTasksCount}/${participant.totalTasksInQuest}",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = stringResource(
+                    R.string.tasks_progress,
+                    participant.completedTasksCount,
+                    participant.totalTasksInQuest
+                ),
+                fontSize = 12.sp
             )
         }
 
