@@ -173,4 +173,17 @@
     <string name="at_checkpoint">На: %1$s</string>
     <string name="tasks_progress">Завдання: %1$d/%2$d</string>
     <string name="you">Ви</string>
+    <string name="statistics">Статистика</string>
+    <string name="total_sessions">Всього сесій</string>
+    <string name="finished">Завершено</string>
+    <string name="finish_rate">Відсоток завершення</string>
+    <string name="finished_sessions_of_total">Завершено %1$d з %2$d сесій</string>
+    <string name="average_rank">Середній рейтинг</string>
+    <string name="best_rank">Найкращий рейтинг</string>
+    <string name="total_score">Загальний рахунок</string>
+    <string name="progress_breakdown">Деталі прогресу</string>
+    <string name="checkpoints_passed">Пройдено точок</string>
+    <string name="tasks_completed">Виконано завдань</string>
+    <string name="rejected">Відхилено</string>
+    <string name="other">Інше</string>
 </resources>

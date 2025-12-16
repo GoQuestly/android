@@ -15,6 +15,7 @@ import com.goquestly.presentation.sessionDetails.SessionDetailsScreen
 import com.goquestly.presentation.task.TaskScreen
 import com.goquestly.presentation.task.TaskSuccessScreen
 import com.goquestly.presentation.verifyEmail.VerifyEmailScreen
+import com.goquestly.presentation.statistics.StatisticsScreen
 import com.goquestly.util.INVITE_DEEP_LINK_PREFIX
 
 fun NavGraphBuilder.mainGraph(
@@ -189,6 +190,10 @@ fun NavGraphBuilder.mainGraph(
                     }
                 }
             )
+        }
+
+        composable(NavScreen.Statistics.route) {
+            StatisticsScreen()
         }
     }
 }

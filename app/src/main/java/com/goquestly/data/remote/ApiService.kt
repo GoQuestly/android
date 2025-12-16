@@ -33,6 +33,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import com.goquestly.data.remote.dto.SessionStatisticsDto
 
 interface ApiService {
 
@@ -151,4 +152,8 @@ interface ApiService {
     suspend fun getSessionScores(
         @Path("id") sessionId: Int
     ): SessionScoresDto
+
+    @RequiresAuth
+    @GET("/participant/sessions/statistics")
+    suspend fun getSessionStatistics(): SessionStatisticsDto
 }

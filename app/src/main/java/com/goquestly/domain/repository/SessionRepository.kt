@@ -8,6 +8,7 @@ import com.goquestly.domain.model.QuestSessionSummary
 import com.goquestly.domain.model.QuestTask
 import com.goquestly.domain.model.TaskStartData
 import com.goquestly.domain.model.TaskSubmitData
+import com.goquestly.domain.model.SessionStatistics
 import java.io.File
 
 interface SessionRepository {
@@ -46,4 +47,6 @@ interface SessionRepository {
     suspend fun submitPhoto(sessionId: Int, pointId: Int, photoFile: File): Result<TaskSubmitData>
 
     suspend fun getSessionScores(sessionId: Int): Result<List<ParticipantScore>>
+
+    suspend fun getSessionStatistics(): Result<SessionStatistics>
 }

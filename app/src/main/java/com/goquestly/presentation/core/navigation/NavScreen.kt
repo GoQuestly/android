@@ -35,7 +35,8 @@ sealed class NavScreen(val route: String) {
         private val screensWithBottomNav by lazy {
             setOf(
                 Home.route,
-                Profile.route
+                Profile.route,
+                Statistics.route
             )
         }
 
@@ -43,4 +44,6 @@ sealed class NavScreen(val route: String) {
             return route in screensWithBottomNav
         }
     }
+
+    data object Statistics : NavScreen("statistics")
 }

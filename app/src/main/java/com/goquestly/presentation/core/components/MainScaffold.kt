@@ -28,6 +28,7 @@ fun MainScaffold(
 
     val bottomNavItems = listOf(
         BottomNavItem.Home,
+        BottomNavItem.Statistics,
         BottomNavItem.Profile
     )
 

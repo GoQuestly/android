@@ -172,4 +172,17 @@
     <string name="at_checkpoint">At: %1$s</string>
     <string name="tasks_progress">Tasks: %1$d/%2$d</string>
     <string name="you">You</string>
+    <string name="statistics">Statistics</string>
+    <string name="total_sessions">Total sessions</string>
+    <string name="finished">Finished</string>
+    <string name="finish_rate">Finish rate</string>
+    <string name="finished_sessions_of_total">%1$d of %2$d sessions finished</string>
+    <string name="average_rank">Average rank</string>
+    <string name="best_rank">Best rank</string>
+    <string name="total_score">Total score</string>
+    <string name="progress_breakdown">Progress breakdown</string>
+    <string name="checkpoints_passed">Checkpoints passed</string>
+    <string name="tasks_completed">Tasks completed</string>
+    <string name="rejected">Rejected</string>
+    <string name="other">Other</string>
 </resources>
