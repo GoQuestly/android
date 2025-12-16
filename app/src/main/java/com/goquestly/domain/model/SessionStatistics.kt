@@ -4,7 +4,7 @@ data class SessionStatistics(
     val totalSessions: Int,
     val finishedSessions: Int,
     val finishRate: Double,
-    val averageRank: Int?,
+    val averageRank: Double?,
     val bestRank: Int?,
     val totalScore: Int,
     val totalCheckpointsPassed: Int,

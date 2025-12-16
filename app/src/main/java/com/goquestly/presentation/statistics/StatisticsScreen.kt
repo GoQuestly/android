@@ -176,7 +176,7 @@ private fun StatisticsContent(
                 StatCard(
                     modifier = Modifier.weight(1f),
                     title = stringResource(R.string.average_rank),
-                    value = stats.averageRank?.let { "#${stats.averageRank}" } ?: "-"
+                    value = stats.averageRank?.let { "#${"%.2f".format(it)}" } ?: "-"
                 )
             }
         }
