@@ -59,6 +59,7 @@ class ActiveSessionViewModel @Inject constructor(
         observeLocationUpdates()
         observePointPassedEvents()
         observeSessionCancelled()
+        observeSessionEnded()
         observePhotoModerated()
     }
 
@@ -90,6 +91,14 @@ class ActiveSessionViewModel @Inject constructor(
     private fun observeSessionCancelled() {
         viewModelScope.launch {
             activeSessionManager.sessionCancelledEvents.collect {
+                handleSessionCompletion()
+            }
+        }
+    }
+
+    private fun observeSessionEnded() {
+        viewModelScope.launch {
+            activeSessionManager.sessionEndedEvents.collect {
                 handleSessionCompletion()
             }
         }

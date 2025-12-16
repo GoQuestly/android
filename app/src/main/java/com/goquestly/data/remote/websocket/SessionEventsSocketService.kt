@@ -28,11 +28,15 @@ class SessionEventsSocketService @Inject constructor(
 ) {
     private val participantJoinedCallbacks = mutableListOf<(ParticipantEvent.Joined) -> Unit>()
     private val participantLeftCallbacks = mutableListOf<(ParticipantEvent.Left) -> Unit>()
+    private val sessionCancelledCallbacks = mutableListOf<() -> Unit>()
+    private val sessionEndedCallbacks = mutableListOf<() -> Unit>()
 
     companion object {
         private const val TAG = "SessionEventsSocket"
         private const val ERROR_SUBSCRIBE = "subscribe-error"
         private const val ERROR_UNSUBSCRIBE = "unsubscribe-error"
+        private const val SESSION_CANCELLED = "session-cancelled"
+        private const val SESSION_ENDED = "session-ended"
     }
 
     suspend fun connect() {
@@ -61,6 +65,22 @@ class SessionEventsSocketService @Inject constructor(
         }
         participantLeftCallbacks.add(callback)
         awaitClose { participantLeftCallbacks.remove(callback) }
+    }
+
+    fun observeSessionCancelled(): Flow<Unit> = callbackFlow {
+        val callback: () -> Unit = {
+            trySend(Unit)
+        }
+        sessionCancelledCallbacks.add(callback)
+        awaitClose { sessionCancelledCallbacks.remove(callback) }
+    }
+
+    fun observeSessionEnded(): Flow<Unit> = callbackFlow {
+        val callback: () -> Unit = {
+            trySend(Unit)
+        }
+        sessionEndedCallbacks.add(callback)
+        awaitClose { sessionEndedCallbacks.remove(callback) }
     }
 
     fun observeSubscribeError(): Flow<String> = observeCustomError(ERROR_SUBSCRIBE)
@@ -96,11 +116,21 @@ class SessionEventsSocketService @Inject constructor(
                     }
                 }
             }
+
+            on(SESSION_CANCELLED) {
+                sessionCancelledCallbacks.forEach { it() }
+            }
+
+            on(SESSION_ENDED) {
+                sessionEndedCallbacks.forEach { it() }
+            }
         }
     }
 
     override fun clearCallbacks() {
         participantJoinedCallbacks.clear()
         participantLeftCallbacks.clear()
+        sessionCancelledCallbacks.clear()
+        sessionEndedCallbacks.clear()
     }
 }

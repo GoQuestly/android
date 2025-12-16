@@ -12,11 +12,11 @@ import com.goquestly.domain.model.QuestPoint
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.QuestSessionSummary
 import com.goquestly.domain.model.QuestTask
+import com.goquestly.domain.model.SessionResults
+import com.goquestly.domain.model.SessionStatistics
 import com.goquestly.domain.model.TaskStartData
 import com.goquestly.domain.model.TaskSubmitData
 import com.goquestly.domain.repository.SessionRepository
-import com.goquestly.domain.mapper.toDomain
-import com.goquestly.domain.model.SessionStatistics
 import com.goquestly.util.imageMimeType
 import com.goquestly.util.runCatchingAppException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -125,5 +125,10 @@ class SessionRepositoryImpl @Inject constructor(
     override suspend fun getSessionStatistics(): Result<SessionStatistics> =
         runCatchingAppException {
             apiService.getSessionStatistics().toDomain()
+        }
+
+    override suspend fun getSessionResults(sessionId: Int): Result<SessionResults> =
+        runCatchingAppException {
+            apiService.getSessionResults(sessionId).toDomain()
         }
 }
