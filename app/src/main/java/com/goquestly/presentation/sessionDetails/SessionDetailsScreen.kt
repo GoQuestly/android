@@ -472,58 +472,61 @@ private fun ParticipantsPreview(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Icon(
+            imageVector = Icons.Outlined.People,
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(
+            text = stringResource(R.string.participants_label),
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        val visibleParticipantCount = 3
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
+            horizontalArrangement = Arrangement.spacedBy((-15).dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Outlined.People,
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
+            participants.take(visibleParticipantCount).forEach { participant ->
+                ParticipantAvatar(participant.userName, participant.photoUrl)
+            }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Text(
-                text = stringResource(R.string.participants_label),
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            val visibleParticipantCount = 5
-            Row(horizontalArrangement = Arrangement.spacedBy((-15).dp)) {
-                participants.take(visibleParticipantCount).forEach { participant ->
-                    ParticipantAvatar(participant.userName, participant.photoUrl)
-                }
-
-                if (participants.size > visibleParticipantCount) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceVariant),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "+${participants.size - visibleParticipantCount}",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+            if (participants.size > visibleParticipantCount) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "+${participants.size - visibleParticipantCount}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f, fill = false))
 
         Text(
             text = stringResource(R.string.view_all),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.clickable(onClick = onViewAll)
+            maxLines = 1,
+            modifier = Modifier
+                .clickable(onClick = onViewAll)
+                .padding(start = 8.dp)
         )
     }
 }
