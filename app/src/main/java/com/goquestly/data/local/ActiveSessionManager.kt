@@ -42,6 +42,9 @@ class ActiveSessionManager @Inject constructor(
     private val _sessionCancelledEvents = MutableSharedFlow<Unit>(replay = 0)
     val sessionCancelledEvents = _sessionCancelledEvents.asSharedFlow()
 
+    private val _sessionEndedEvents = MutableSharedFlow<Unit>(replay = 0)
+    val sessionEndedEvents = _sessionEndedEvents.asSharedFlow()
+
     private val _photoModeratedEvents = MutableSharedFlow<PhotoModeratedEvent>(replay = 0)
     val photoModeratedEvents = _photoModeratedEvents.asSharedFlow()
 
@@ -85,6 +88,10 @@ class ActiveSessionManager @Inject constructor(
 
     suspend fun emitSessionCancelled() {
         _sessionCancelledEvents.emit(Unit)
+    }
+
+    suspend fun emitSessionEnded() {
+        _sessionEndedEvents.emit(Unit)
     }
 
     suspend fun emitPhotoModerated(event: PhotoModeratedEvent) {

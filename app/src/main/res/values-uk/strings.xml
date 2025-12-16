@@ -104,6 +104,8 @@
     <string name="participant_rejected_title">Участь відхилено</string>
     <string name="participant_rejected_message">Вам не дозволена участь в цій сесії, оскільки ви знаходитесь надто далеко від початкової точки.</string>
     <string name="participant_rejected_details_message">Ви не можете приєднатися до цієї сесії, оскільки вашу участь було відхилено: ви знаходитесь надто далеко від початкової точки.</string>
+    <string name="fcm_notification_channel_name">Сповіщення про квести</string>
+    <string name="fcm_notification_channel_description">Сповіщення про сесії квестів, запрошення і оновлення</string>
     <string name="participant_disqualified_title">Дискваліфіковано</string>
     <string name="participant_disqualified_details_message">Ви не можете продовжити участь у цій сесії, оскільки не виконали обов\'язкове завдання.</string>
     <string name="rejection_reason_no_location">Вас дискваліфіковано, оскільки не вдалося визначити ваше місцезнаходження</string>
@@ -173,4 +175,18 @@
     <string name="at_checkpoint">На: %1$s</string>
     <string name="tasks_progress">Завдання: %1$d/%2$d</string>
     <string name="you">Ви</string>
+    <string name="session_results_title">Результати сесії</string>
+    <string name="view_results">Переглянути результати</string>
+    <string name="session_statistics">Статистика сесії</string>
+    <string name="leaderboard_title">Таблиця лідерів</string>
+    <string name="total_participants">Всього учасників:</string>
+    <string name="finished_participants">Завершили:</string>
+    <string name="did_not_finish_participants">Не завершили:</string>
+    <string name="no_participants_finished">Жоден учасник ще не завершив квест</string>
+    <string name="checkpoints_passed">%1$d точок</string>
+    <string name="points">б</string>
+    <string name="duration_format_hms">%1$d:%2$02d:%3$02d</string>
+    <string name="duration_format_ms">%1$d:%2$02d</string>
+    <string name="duration_format_s">0:%1$02d</string>
+    <string name="retry">Спробувати ще раз</string>
 </resources>

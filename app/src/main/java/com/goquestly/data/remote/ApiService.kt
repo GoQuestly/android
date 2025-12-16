@@ -3,6 +3,7 @@ package com.goquestly.data.remote
 import com.goquestly.data.remote.annotation.RequiresAuth
 import com.goquestly.data.remote.dto.AuthResponseDto
 import com.goquestly.data.remote.dto.CodeWordSubmitDto
+import com.goquestly.data.remote.dto.DeviceTokenRequestDto
 import com.goquestly.data.remote.dto.GoogleSignInRequestDto
 import com.goquestly.data.remote.dto.JoinSessionRequestDto
 import com.goquestly.data.remote.dto.LoginRequestDto
@@ -16,6 +17,7 @@ import com.goquestly.data.remote.dto.QuizAnswerSubmitDto
 import com.goquestly.data.remote.dto.RegisterRequestDto
 import com.goquestly.data.remote.dto.ResetPasswordRequestDto
 import com.goquestly.data.remote.dto.ServerTimeDto
+import com.goquestly.data.remote.dto.SessionResultsDto
 import com.goquestly.data.remote.dto.SessionScoresDto
 import com.goquestly.data.remote.dto.TaskStartResponseDto
 import com.goquestly.data.remote.dto.TaskSubmitResponseDto
@@ -77,6 +79,14 @@ interface ApiService {
     suspend fun updateAvatar(
         @Part file: MultipartBody.Part
     )
+
+    @RequiresAuth
+    @POST("/user/device-token")
+    suspend fun registerDeviceToken(@Body request: DeviceTokenRequestDto)
+
+    @RequiresAuth
+    @DELETE("/user/device-token")
+    suspend fun deleteDeviceToken()
 
     @RequiresAuth
     @POST("/participant/sessions/join")
@@ -151,4 +161,10 @@ interface ApiService {
     suspend fun getSessionScores(
         @Path("id") sessionId: Int
     ): SessionScoresDto
+
+    @RequiresAuth
+    @GET("/participant/sessions/{id}/results")
+    suspend fun getSessionResults(
+        @Path("id") sessionId: Int
+    ): SessionResultsDto
 }
