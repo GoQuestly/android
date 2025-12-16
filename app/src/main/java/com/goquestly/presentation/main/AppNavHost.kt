@@ -21,10 +21,8 @@ fun AppNavHost(
     authState: AuthState,
     activeSessionId: Int?,
     initialIntent: Intent?,
-    pendingInviteToken: String?,
     onAuthStateChanged: () -> Unit,
-    onLogout: () -> Unit,
-    onSetPendingInviteToken: (String?) -> Unit
+    onLogout: () -> Unit
 ) {
     val startDestination = when (authState) {
         is AuthState.Unauthenticated -> NavGraph.AUTH_GRAPH.route
@@ -38,7 +36,7 @@ fun AppNavHost(
     var hasHandledInitialNavigation by remember { mutableStateOf(false) }
     var lastHandledIntent by remember { mutableStateOf<Intent?>(null) }
 
-    LaunchedEffect(initialIntent, authState) {
+    LaunchedEffect(initialIntent) {
         val intentData = initialIntent?.data
 
         if (initialIntent == lastHandledIntent) {
@@ -53,22 +51,13 @@ fun AppNavHost(
 
         if (isCurrentIntentDeeplink) {
             val inviteToken = intentData.pathSegments?.getOrNull(1)
-            if (inviteToken != null) {
-                when (authState) {
-                    is AuthState.Authenticated -> {
-                        val targetRoute = "invite/$inviteToken"
-                        if (navController.currentDestination?.route != targetRoute) {
-                            navController.navigate(targetRoute) {
-                                launchSingleTop = true
-                            }
-                            lastHandledIntent = initialIntent
-                        }
+            if (inviteToken != null && authState is AuthState.Authenticated) {
+                val targetRoute = "invite/$inviteToken"
+                if (navController.currentDestination?.route != targetRoute) {
+                    navController.navigate(targetRoute) {
+                        launchSingleTop = true
                     }
-
-                    is AuthState.Unauthenticated -> {
-                        onSetPendingInviteToken(inviteToken)
-                        lastHandledIntent = initialIntent
-                    }
+                    lastHandledIntent = initialIntent
                 }
             }
         }
@@ -108,18 +97,6 @@ fun AppNavHost(
                         inclusive = false
                     }
                 }
-            }
-        }
-    }
-
-    LaunchedEffect(pendingInviteToken, authState) {
-        if (pendingInviteToken != null && authState is AuthState.Authenticated) {
-            val targetRoute = "invite/$pendingInviteToken"
-            if (navController.currentDestination?.route != targetRoute) {
-                navController.navigate(targetRoute) {
-                    launchSingleTop = true
-                }
-                onSetPendingInviteToken(null)
             }
         }
     }

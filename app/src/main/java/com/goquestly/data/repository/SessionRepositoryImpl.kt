@@ -12,7 +12,6 @@ import com.goquestly.domain.model.QuestPoint
 import com.goquestly.domain.model.QuestSession
 import com.goquestly.domain.model.QuestSessionSummary
 import com.goquestly.domain.model.QuestTask
-import com.goquestly.domain.model.SessionResults
 import com.goquestly.domain.model.TaskStartData
 import com.goquestly.domain.model.TaskSubmitData
 import com.goquestly.domain.repository.SessionRepository
@@ -119,10 +118,5 @@ class SessionRepositoryImpl @Inject constructor(
     override suspend fun getSessionScores(sessionId: Int): Result<List<ParticipantScore>> =
         runCatchingAppException {
             apiService.getSessionScores(sessionId).toDomain()
-        }
-
-    override suspend fun getSessionResults(sessionId: Int): Result<SessionResults> =
-        runCatchingAppException {
-            apiService.getSessionResults(sessionId).toDomain()
         }
 }

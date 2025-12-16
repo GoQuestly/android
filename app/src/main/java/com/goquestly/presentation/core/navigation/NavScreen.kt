@@ -31,10 +31,6 @@ sealed class NavScreen(val route: String) {
         ) = "task_success/$sessionId/$pointId/$scoreEarned/$passed/$isPhotoTask"
     }
 
-    data object SessionResults : NavScreen("session_results/{sessionId}") {
-        fun createRoute(sessionId: Int) = "session_results/$sessionId"
-    }
-
     companion object {
         private val screensWithBottomNav by lazy {
             setOf(

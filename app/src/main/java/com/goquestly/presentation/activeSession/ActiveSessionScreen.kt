@@ -93,12 +93,10 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.goquestly.R
-import com.goquestly.domain.model.ParticipantScore
 import com.goquestly.domain.model.ParticipationBlockReason
 import com.goquestly.domain.model.QuestPoint
 import com.goquestly.domain.model.TaskStatus
 import com.goquestly.presentation.core.components.ConfirmationBottomSheet
-import com.goquestly.presentation.core.components.ProfileAvatar
 import com.goquestly.presentation.core.components.button.PrimaryButton
 import com.goquestly.util.DEFAULT_MAP_ZOOM_LEVEL
 import com.goquestly.util.GOOGLE_MAPS_MAP_ID
@@ -109,13 +107,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.abs
+import com.goquestly.domain.model.ParticipantScore
+import com.goquestly.presentation.core.components.ProfileAvatar
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ActiveSessionScreen(
     viewModel: ActiveSessionViewModel = hiltViewModel(),
     onLeaveSession: () -> Unit,
-    onSessionEnded: (sessionId: Int) -> Unit,
     onNavigateToTask: ((sessionId: Int, pointId: Int, pointName: String) -> Unit)? = null
 ) {
     val state by viewModel.state.collectAsState()
@@ -124,12 +123,7 @@ fun ActiveSessionScreen(
 
     LaunchedEffect(state.isSessionCompleted) {
         if (state.isSessionCompleted) {
-            val sessionId = state.session?.id
-            if (sessionId != null) {
-                onSessionEnded(sessionId)
-            } else {
-                onLeaveSession()
-            }
+            onLeaveSession()
         }
     }
 

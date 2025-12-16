@@ -74,7 +74,6 @@ import kotlin.time.Instant
 fun SessionDetailsScreen(
     viewModel: SessionDetailsViewModel = hiltViewModel(),
     onJoinSession: (sessionId: Int) -> Unit,
-    onViewResults: (sessionId: Int) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -89,7 +88,6 @@ fun SessionDetailsScreen(
         onViewAllParticipants = viewModel::toggleParticipantsSheet,
         onDismissParticipantsSheet = viewModel::toggleParticipantsSheet,
         onJoinSession = { viewModel.joinSession(onJoinSession) },
-        onViewResults = onViewResults,
         onShowLeaveConfirmation = viewModel::showLeaveConfirmation,
         onDismissLeaveConfirmation = viewModel::dismissLeaveConfirmation,
         onConfirmLeave = { viewModel.leaveSession { onNavigateBack() } }
@@ -104,7 +102,6 @@ private fun SessionDetailsContent(
     onViewAllParticipants: () -> Unit,
     onDismissParticipantsSheet: () -> Unit,
     onJoinSession: (sessionId: Int) -> Unit,
-    onViewResults: (sessionId: Int) -> Unit,
     onShowLeaveConfirmation: () -> Unit,
     onDismissLeaveConfirmation: () -> Unit,
     onConfirmLeave: () -> Unit
@@ -192,7 +189,6 @@ private fun SessionDetailsContent(
                     currentUserBlockReason = state.currentUserBlockReason,
                     onViewAllParticipants = onViewAllParticipants,
                     onJoinSession = onJoinSession,
-                    onViewResults = onViewResults,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -231,7 +227,6 @@ private fun SessionDetails(
     currentUserBlockReason: String?,
     onViewAllParticipants: () -> Unit,
     onJoinSession: (sessionId: Int) -> Unit,
-    onViewResults: (sessionId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -393,9 +388,6 @@ private fun SessionDetails(
 
         PrimaryButton(
             text = when {
-                session.status == SessionStatus.COMPLETED || session.status == SessionStatus.CANCELLED ->
-                    stringResource(R.string.view_results)
-
                 blockReason != null -> stringResource(R.string.participant_rejected_title)
                 currentUserParticipationStatus == ParticipationStatus.REJECTED ->
                     stringResource(R.string.participant_rejected_title)
@@ -406,18 +398,8 @@ private fun SessionDetails(
                 session.isActive -> stringResource(R.string.join_session)
                 else -> stringResource(R.string.session_not_active)
             },
-            onClick = {
-                when {
-                    session.status == SessionStatus.COMPLETED || session.status == SessionStatus.CANCELLED ->
-                        onViewResults(session.id)
-
-                    else -> onJoinSession(session.id)
-                }
-            },
-            enabled = when {
-                session.status == SessionStatus.COMPLETED || session.status == SessionStatus.CANCELLED -> true
-                else -> session.isActive && !isBlockedFromParticipation
-            },
+            onClick = { onJoinSession(session.id) },
+            enabled = session.isActive && !isBlockedFromParticipation,
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .height(56.dp),
@@ -667,7 +649,6 @@ private fun SessionDetailsScreenPreview() {
             onViewAllParticipants = {},
             onDismissParticipantsSheet = {},
             onJoinSession = {},
-            onViewResults = {},
             onShowLeaveConfirmation = {},
             onDismissLeaveConfirmation = {},
             onConfirmLeave = {}

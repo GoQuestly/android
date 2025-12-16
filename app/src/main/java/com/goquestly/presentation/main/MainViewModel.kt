@@ -3,8 +3,6 @@ package com.goquestly.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goquestly.data.local.ActiveSessionManager
-import com.goquestly.data.messaging.FcmTokenManager
-import com.goquestly.domain.model.AuthState
 import com.goquestly.domain.repository.AuthRepository
 import com.goquestly.domain.useCase.GetAuthStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +16,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getAuthStateUseCase: GetAuthStateUseCase,
     private val authRepository: AuthRepository,
-    private val activeSessionManager: ActiveSessionManager,
-    private val fcmTokenManager: FcmTokenManager
+    private val activeSessionManager: ActiveSessionManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MainState())
@@ -49,22 +46,13 @@ class MainViewModel @Inject constructor(
                     activeSessionId = activeSessionId
                 )
             }
-
-            if (authStateResult.getOrNull() is AuthState.Authenticated) {
-                fcmTokenManager.registerTokenIfNeeded()
-            }
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            fcmTokenManager.unregisterToken()
             authRepository.logout()
             checkAuthState()
         }
-    }
-
-    fun setPendingInviteToken(token: String?) {
-        _state.update { it.copy(pendingInviteToken = token) }
     }
 }

@@ -34,13 +34,11 @@ class ActiveSessionSocketService @Inject constructor(
         private const val PARTICIPANT_DISQUALIFIED = "participant-disqualified"
         private const val POINT_PASSED = "point-passed"
         private const val SESSION_CANCELLED = "session-cancelled"
-        private const val SESSION_ENDED = "session-ended"
         private const val PHOTO_MODERATED = "photo-moderated"
     }
 
     private val pointPassedCallbacks = mutableListOf<(PointPassedEventDto) -> Unit>()
     private val sessionCancelledCallbacks = mutableListOf<() -> Unit>()
-    private val sessionEndedCallbacks = mutableListOf<() -> Unit>()
     private val photoModeratedCallbacks = mutableListOf<(PhotoModeratedEventDto) -> Unit>()
 
     suspend fun connect() {
@@ -83,16 +81,6 @@ class ActiveSessionSocketService @Inject constructor(
         }
     }
 
-    fun observeSessionEnded(): Flow<Unit> = callbackFlow {
-        val callback: () -> Unit = {
-            trySend(Unit)
-        }
-        sessionEndedCallbacks.add(callback)
-        awaitClose {
-            sessionEndedCallbacks.remove(callback)
-        }
-    }
-
     fun observePhotoModerated(): Flow<PhotoModeratedEventDto> = callbackFlow {
         val callback: (PhotoModeratedEventDto) -> Unit = { event ->
             trySend(event)
@@ -128,10 +116,6 @@ class ActiveSessionSocketService @Inject constructor(
             sessionCancelledCallbacks.forEach { it() }
         }
 
-        socket?.on(SESSION_ENDED) {
-            sessionEndedCallbacks.forEach { it() }
-        }
-
         socket?.on(PHOTO_MODERATED) { args ->
             args.firstOrNull()?.let { data ->
                 try {
@@ -148,7 +132,6 @@ class ActiveSessionSocketService @Inject constructor(
     override fun clearCallbacks() {
         pointPassedCallbacks.clear()
         sessionCancelledCallbacks.clear()
-        sessionEndedCallbacks.clear()
         photoModeratedCallbacks.clear()
     }
 }

@@ -140,20 +140,6 @@ class SessionDetailsViewModel @Inject constructor(
                 }
 
                 launch {
-                    sessionEventsSocketService.observeSessionCancelled().collect {
-                        Log.d(TAG, "Session cancelled")
-                        loadSessionDetails()
-                    }
-                }
-
-                launch {
-                    sessionEventsSocketService.observeSessionEnded().collect {
-                        Log.d(TAG, "Session ended")
-                        loadSessionDetails()
-                    }
-                }
-
-                launch {
                     sessionEventsSocketService.observeSubscribeError().collect { error ->
                         Log.e(TAG, "Subscribe error: $error")
                     }
@@ -189,29 +175,6 @@ class SessionDetailsViewModel @Inject constructor(
                         participantCount = currentState.participants.size + 1
                     )
                 )
-            }
-        }
-
-        if (event.photoUrl == null) {
-            viewModelScope.launch {
-                sessionRepository.getSessionDetails(sessionId)
-                    .onSuccess { session ->
-                        val participantWithPhoto =
-                            session.participants.find { it.userId == event.userId }
-                        if (participantWithPhoto != null && participantWithPhoto.photoUrl != null) {
-                            _state.update { currentState ->
-                                currentState.copy(
-                                    participants = currentState.participants.map { participant ->
-                                        if (participant.userId == event.userId) {
-                                            participant.copy(photoUrl = participantWithPhoto.photoUrl)
-                                        } else {
-                                            participant
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                    }
             }
         }
     }

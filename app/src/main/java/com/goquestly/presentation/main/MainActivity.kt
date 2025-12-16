@@ -29,7 +29,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback
-import com.goquestly.data.service.FirebaseMessagingService
 import com.goquestly.domain.model.AuthState
 import com.goquestly.presentation.core.components.ErrorScreen
 import com.goquestly.presentation.core.theme.GoquestlyTheme
@@ -50,7 +49,6 @@ class MainActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
         MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)
 
         currentIntent = intent
-        handleNotificationIntent(intent)
 
         splashScreen.setKeepOnScreenCondition {
             mainViewModel.state.value.isLoading
@@ -90,10 +88,8 @@ class MainActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
                                     authState = state.authState!!,
                                     activeSessionId = state.activeSessionId,
                                     initialIntent = currentIntent,
-                                    pendingInviteToken = state.pendingInviteToken,
                                     onAuthStateChanged = mainViewModel::checkAuthState,
-                                    onLogout = mainViewModel::logout,
-                                    onSetPendingInviteToken = mainViewModel::setPendingInviteToken
+                                    onLogout = mainViewModel::logout
                                 )
                             }
                         }
@@ -107,13 +103,6 @@ class MainActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
         super.onNewIntent(intent)
         currentIntent = intent
         setIntent(intent)
-        handleNotificationIntent(intent)
-    }
-
-    private fun handleNotificationIntent(intent: Intent?) {
-        intent?.getStringExtra(FirebaseMessagingService.EXTRA_NOTIFICATION_TYPE)?.let { type ->
-            Log.d(TAG, "Notification clicked with type: $type")
-        }
     }
 
     override fun onMapsSdkInitialized(renderer: MapsInitializer.Renderer) {
