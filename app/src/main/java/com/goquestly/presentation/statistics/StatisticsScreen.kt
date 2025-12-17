@@ -198,7 +198,7 @@ private fun StatisticsContent(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         FinishRateDonut(
-                            percent = stats.finishRate.toFloat(),
+                            stats = stats,
                             modifier = Modifier.size(124.dp)
                         )
 
@@ -349,20 +349,32 @@ private fun MiniStat(
 
 @Composable
 private fun FinishRateDonut(
-    percent: Float,
+    stats: SessionStatistics,
     modifier: Modifier = Modifier
 ) {
-    val safe = percent.coerceIn(0f, 100f)
-    val sweep = (safe / 100f) * 360f
+    val total = stats.totalSessions.coerceAtLeast(1)
+    val finished = stats.finishedSessions.coerceAtLeast(0)
+    val rejected = (stats.rejectedSessions + stats.disqualifiedSessions).coerceAtLeast(0)
+    val other = (total - finished - rejected).coerceAtLeast(0)
 
+    val finishedPercent = (finished.toFloat() / total) * 100f
+    val rejectedPercent = (rejected.toFloat() / total) * 100f
+    val otherPercent = (other.toFloat() / total) * 100f
+
+    val finishedSweep = (finishedPercent / 100f) * 360f
+    val rejectedSweep = (rejectedPercent / 100f) * 360f
+    val otherSweep = (otherPercent / 100f) * 360f
+
+    val finishedColor = MaterialTheme.colorScheme.primary
+    val rejectedColor = MaterialTheme.colorScheme.error
+    val otherColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f)
     val trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-    val valueColor = MaterialTheme.colorScheme.primary
 
     Box(modifier, contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val stroke = Stroke(
                 width = size.minDimension * 0.10f,
-                cap = StrokeCap.Round
+                cap = StrokeCap.Butt
             )
 
             drawArc(
@@ -373,18 +385,44 @@ private fun FinishRateDonut(
                 style = stroke
             )
 
-            drawArc(
-                color = valueColor,
-                startAngle = -90f,
-                sweepAngle = sweep,
-                useCenter = false,
-                style = stroke
-            )
+            var currentAngle = -90f
+
+            if (finishedSweep > 0) {
+                drawArc(
+                    color = finishedColor,
+                    startAngle = currentAngle,
+                    sweepAngle = finishedSweep,
+                    useCenter = false,
+                    style = stroke
+                )
+                currentAngle += finishedSweep
+            }
+
+            if (rejectedSweep > 0) {
+                drawArc(
+                    color = rejectedColor,
+                    startAngle = currentAngle,
+                    sweepAngle = rejectedSweep,
+                    useCenter = false,
+                    style = stroke
+                )
+                currentAngle += rejectedSweep
+            }
+
+            if (otherSweep > 0) {
+                drawArc(
+                    color = otherColor,
+                    startAngle = currentAngle,
+                    sweepAngle = otherSweep,
+                    useCenter = false,
+                    style = stroke
+                )
+            }
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "${safe.roundToInt()}%",
+                text = "${finishedPercent.roundToInt()}%",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
