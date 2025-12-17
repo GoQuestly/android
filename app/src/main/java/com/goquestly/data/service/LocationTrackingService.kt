@@ -266,7 +266,9 @@ class LocationTrackingService : Service() {
             }
         }
 
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+        if (::locationCallback.isInitialized) {
+            fusedLocationClient.removeLocationUpdates(locationCallback)
+        }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
