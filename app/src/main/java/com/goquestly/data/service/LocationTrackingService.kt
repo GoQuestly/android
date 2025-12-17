@@ -140,6 +140,7 @@ class LocationTrackingService : Service() {
 
         startLocationUpdates()
         startPeriodicLocationUpdates()
+        sendInitialLocation()
     }
 
     private fun startLocationUpdates() {
@@ -221,11 +222,10 @@ class LocationTrackingService : Service() {
         periodicUpdateJob?.cancel()
         periodicUpdateJob = serviceScope.launch {
             while (true) {
-                delay(5000L) // Check every 5 seconds
+                delay(3000L)
 
                 val timeSinceLastUpdate = System.currentTimeMillis() - lastUpdateTimeMs
 
-                // Only send periodic update if no real update was sent in the last 15 seconds
                 if (timeSinceLastUpdate >= PERIODIC_UPDATE_INTERVAL_MS) {
                     lastKnownLocation?.let { location ->
                         sessionId?.let { id ->
@@ -246,6 +246,57 @@ class LocationTrackingService : Service() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun sendInitialLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        serviceScope.launch {
+            try {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    location?.let {
+                        if (it.hasAccuracy() && it.accuracy <= MAX_LOCATION_ACCURACY_METERS) {
+                            val latLng = LatLng(it.latitude, it.longitude)
+                            val bearing = if (it.hasBearing()) it.bearing else 0f
+
+                            lastKnownLocation = latLng
+                            lastUpdateTimeMs = System.currentTimeMillis()
+
+                            serviceScope.launch {
+                                activeSessionManager.updateLocation(latLng, bearing)
+                            }
+
+                            sessionId?.let { id ->
+                                serviceScope.launch {
+                                    try {
+                                        activeSessionSocketService.updateLocation(
+                                            sessionId = id,
+                                            latitude = it.latitude,
+                                            longitude = it.longitude
+                                        )
+                                        Log.d(TAG, "Initial location sent successfully")
+                                    } catch (e: Exception) {
+                                        Log.w(TAG, "Failed to send initial location: ${e.message}")
+                                    }
+                                }
+                            }
+                        } else {
+                            Log.w(TAG, "Initial location too inaccurate: ${it.accuracy}m")
+                        }
+                    } ?: run {
+                        Log.w(TAG, "No initial location available")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to get initial location: ${e.message}")
             }
         }
     }
@@ -338,12 +389,12 @@ class LocationTrackingService : Service() {
         private const val POINT_PASSED_CHANNEL_ID = "point_passed_channel"
         private const val NOTIFICATION_ID = 1001
         private const val POINT_PASSED_NOTIFICATION_BASE_ID = 2000
-        private const val UPDATE_INTERVAL_MS = 5000L
-        private const val FASTEST_UPDATE_INTERVAL_MS = 2000L
+        private const val UPDATE_INTERVAL_MS = 3000L
+        private const val FASTEST_UPDATE_INTERVAL_MS = 1000L
         private const val LOCATION_STALENESS_THRESHOLD_MS = 30000L
         private const val MAX_LOCATION_ACCURACY_METERS = 100f
-        private const val MIN_UPDATE_DISTANCE_METERS = 3f
-        private const val PERIODIC_UPDATE_INTERVAL_MS = 15000L
+        private const val MIN_UPDATE_DISTANCE_METERS = 1.5f
+        private const val PERIODIC_UPDATE_INTERVAL_MS = 8000L
 
         const val ACTION_START_TRACKING = "com.goquestly.action.START_TRACKING"
         const val ACTION_STOP_TRACKING = "com.goquestly.action.STOP_TRACKING"
